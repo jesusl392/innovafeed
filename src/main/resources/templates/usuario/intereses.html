@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Mis intereses')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navegacion}"></header>
+<main id="contenido" class="contenedor contenedor-medio">
+    <h1>Mis intereses</h1>
+    <p>Elige las categorías que te interesan. Cuando se publique un emprendimiento en ellas, te avisaremos.</p>
+    <div th:replace="~{fragments/layout :: alertas}"></div>
+
+    <form th:action="@{/usuario/intereses}" method="post">
+        <div class="grid-intereses">
+            <label class="interes" th:each="c : ${categorias}">
+                <input type="checkbox" name="categorias" th:value="${c.id}"
+                       th:checked="${#lists.contains(idsElegidos, c.id)}">
+                <span>
+                    <strong th:text="${c.nombre}">Categoría</strong>
+                    <small th:text="${c.descripcion}">Descripción</small>
+                </span>
+            </label>
+        </div>
+        <button type="submit" class="btn">Guardar intereses</button>
+    </form>
+</main>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+</body>
+</html>

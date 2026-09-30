@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Estadísticas')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navegacion}"></header>
+<main id="contenido" class="contenedor">
+    <p><a th:href="@{/emprendedor}">← Mis emprendimientos</a></p>
+    <div class="encabezado">
+        <h1 th:text="'Estadísticas de ' + ${e.nombre}">Estadísticas</h1>
+        <span class="chip" th:text="'Plan ' + ${e.plan.nombre}">Plan</span>
+    </div>
+
+    <!-- Todos los planes -->
+    <div class="metricas">
+        <div class="metrica">
+            <span class="metrica-valor" th:text="${est.visitasTotales}">0</span>
+            <span class="metrica-etiqueta">Visitas totales</span>
+        </div>
+        <div class="metrica">
+            <span class="metrica-valor" th:text="${est.guardados}">0</span>
+            <span class="metrica-etiqueta">Personas lo guardaron</span>
+        </div>
+        <div class="metrica" th:if="${est.verSemana}">
+            <span class="metrica-valor" th:text="${est.visitasSemana}">0</span>
+            <span class="metrica-etiqueta">Visitas últimos 7 días</span>
+        </div>
+    </div>
+
+    <!-- Visible e Impulso: visitas de la semana -->
+    <section class="tarjeta seccion-est">
+        <h2>Visitas de la semana</h2>
+        <th:block th:if="${est.verSemana}">
+            <div class="columnas">
+                <div class="columna" th:each="d : ${est.ultimos7Dias}">
+                    <span class="columna-valor" th:text="${d.cantidad}">0</span>
+                    <span class="columna-barra"><span class="columna-relleno"
+                          th:style="'height:' + ${d.porcentajeDe(est.maximoPorDia())} + '%'"></span></span>
+                    <span class="columna-etiqueta" th:text="${d.etiqueta}">lun 1</span>
+                </div>
+            </div>
+        </th:block>
+        <div th:unless="${est.verSemana}" class="bloqueado">
+            <p>Disponible en los planes <strong>Visible</strong> e <strong>Impulso</strong>.</p>
+            <a class="btn btn-sm" th:href="@{/emprendedor/emprendimientos/{id}/visibilidad(id=${e.id})}">Ver planes</a>
+        </div>
+    </section>
+
+    <!-- Impulso: por ciudad e intereses -->
+    <div class="grid grid-2">
+        <section class="tarjeta seccion-est">
+            <h2>Visitas por ciudad</h2>
+            <th:block th:if="${est.avanzadas}">
+                <p th:if="${#lists.isEmpty(est.porCiudad)}" class="nota">Aún no hay visitas.</p>
+                <div class="barras">
+                    <div class="barra-fila" th:each="c : ${est.porCiudad}">
+                        <span class="barra-etiqueta" th:text="${c.etiqueta}">Ciudad</span>
+                        <span class="barra"><span class="barra-relleno"
+                              th:style="'width:' + ${c.porcentajeDe(est.maximoPorCiudad())} + '%'"></span></span>
+                        <span class="barra-valor" th:text="${c.cantidad}">0</span>
+                    </div>
+                </div>
+            </th:block>
+            <div th:unless="${est.avanzadas}" class="bloqueado">
+                <p>Disponible en el plan <strong>Impulso</strong>.</p>
+            </div>
+        </section>
+
+        <section class="tarjeta seccion-est">
+            <h2>Intereses de tus visitantes</h2>
+            <th:block th:if="${est.avanzadas}">
+                <p class="nota">Cuántos visitantes (con sesión) tienen cada interés.</p>
+                <p th:if="${#lists.isEmpty(est.porIntereses)}" class="nota">Aún no hay datos.</p>
+                <div class="barras">
+                    <div class="barra-fila" th:each="c : ${est.porIntereses}">
+                        <span class="barra-etiqueta" th:text="${c.etiqueta}">Interés</span>
+                        <span class="barra"><span class="barra-relleno"
+                              th:style="'width:' + ${c.porcentajeDe(est.maximoPorIntereses())} + '%'"></span></span>
+                        <span class="barra-valor" th:text="${c.cantidad}">0</span>
+                    </div>
+                </div>
+            </th:block>
+            <div th:unless="${est.avanzadas}" class="bloqueado">
+                <p>Disponible en el plan <strong>Impulso</strong>.</p>
+            </div>
+        </section>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+</body>
+</html>

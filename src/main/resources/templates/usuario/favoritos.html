@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Mis favoritos')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navegacion}"></header>
+<main id="contenido" class="contenedor">
+    <h1>Mis favoritos</h1>
+    <div th:replace="~{fragments/layout :: alertas}"></div>
+
+    <p th:if="${#lists.isEmpty(favoritos)}" class="vacio">
+        Aún no guardas emprendimientos. Explora el <a th:href="@{/catalogo}">catálogo</a>
+        y pulsa «Guardar» en los que te gusten.
+    </p>
+
+    <div class="grid">
+        <div th:each="f : ${favoritos}" class="favorito">
+            <article th:replace="~{fragments/tarjeta :: tarjeta(${f.emprendimiento})}"></article>
+            <form th:action="@{/usuario/favoritos/{id}/quitar(id=${f.emprendimiento.id})}" method="post">
+                <button type="submit" class="btn btn-sm btn-peligro">Quitar</button>
+            </form>
+        </div>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+</body>
+</html>

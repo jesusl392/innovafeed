@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Planes')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navegacion}"></header>
+<main id="contenido" class="contenedor">
+    <h1>Configuración de planes</h1>
+    <p class="nota">Precios y beneficios se guardan en la base de datos: los cambios aplican de inmediato, sin tocar código.</p>
+    <div th:replace="~{fragments/layout :: alertas}"></div>
+
+    <div class="tabla-contenedor">
+        <table class="tabla">
+            <thead>
+            <tr><th>Plan</th><th>Precio</th><th>Prioridad</th><th>Boosts/mes</th><th>Badge</th><th>Beneficios</th><th></th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="p : ${planes}">
+                <td><strong th:text="${p.nombre}">Plan</strong><div class="meta" th:text="${p.codigo}">COD</div></td>
+                <td th:text="'$' + ${p.precioMensual}">$0</td>
+                <td th:text="${p.prioridad}">1</td>
+                <td th:text="${p.boostsPorMes}">0</td>
+                <td th:text="${p.badge} ?: '—'">—</td>
+                <td><ul th:replace="~{fragments/plan :: beneficios(${p})}"></ul></td>
+                <td><a class="btn btn-sm btn-secundario" th:href="@{/admin/planes/{id}/editar(id=${p.id})}">Editar</a></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+</body>
+</html>

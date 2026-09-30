@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Panel admin')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navegacion}"></header>
+<main id="contenido" class="contenedor">
+    <h1>Panel del administrador</h1>
+
+    <!-- Métricas principales -->
+    <div class="metricas">
+        <div class="metrica">
+            <span class="metrica-valor" th:text="${m.totalEmprendimientos}">0</span>
+            <span class="metrica-etiqueta">Emprendimientos</span>
+            <small th:text="${m.emprendimientosActivos} + ' activos'">0 activos</small>
+        </div>
+        <div class="metrica">
+            <span class="metrica-valor" th:text="${m.usuariosActivos}">0</span>
+            <span class="metrica-etiqueta">Usuarios activos</span>
+        </div>
+        <div class="metrica">
+            <span class="metrica-valor" th:text="${m.notificacionesSinLeer}">0</span>
+            <span class="metrica-etiqueta">Notificaciones sin leer</span>
+        </div>
+        <div class="metrica">
+            <span class="metrica-valor" th:text="${m.visitasTotales}">0</span>
+            <span class="metrica-etiqueta">Vistas totales</span>
+        </div>
+    </div>
+
+    <!-- Aviso de pendientes -->
+    <a th:if="${m.emprendimientosPendientes > 0}" class="alerta alerta-aviso bloque-link"
+       th:href="@{/admin/emprendimientos(estado='PENDIENTE')}">
+        Hay <strong th:text="${m.emprendimientosPendientes}">0</strong> emprendimiento(s) pendiente(s) de revisión →
+    </a>
+
+    <div class="grid grid-2">
+        <section class="tarjeta">
+            <h2>Más visitados</h2>
+            <p th:if="${#lists.isEmpty(m.masVisitados)}" class="nota">Aún no hay visitas.</p>
+            <div class="barras">
+                <div class="barra-fila" th:each="c : ${m.masVisitados}">
+                    <span class="barra-etiqueta" th:text="${c.etiqueta}">Nombre</span>
+                    <span class="barra"><span class="barra-relleno"
+                          th:style="'width:' + ${c.porcentajeDe(m.maximoVisitado())} + '%'"></span></span>
+                    <span class="barra-valor" th:text="${c.cantidad}">0</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="tarjeta">
+            <h2>Gestión</h2>
+            <ul class="lista-links">
+                <li><a th:href="@{/admin/emprendimientos}">Emprendimientos</a></li>
+                <li><a th:href="@{/admin/usuarios}">Usuarios</a></li>
+                <li><a th:href="@{/admin/categorias}">Categorías</a></li>
+                <li><a th:href="@{/admin/planes}">Planes</a></li>
+            </ul>
+        </section>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+</body>
+</html>

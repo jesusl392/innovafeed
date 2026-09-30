@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Inicio')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navegacion}"></header>
+
+<!-- Hero a todo el ancho, con el fondo oscuro de la marca -->
+<section class="hero-principal">
+    <div class="hero-interior">
+        <p class="hero-eyebrow">Emprendimientos colombianos</p>
+        <h1>Hacemos crecer <span>lo que nace.</span></h1>
+        <p class="hero-texto">Los emprendimientos pequeños nacen sin visibilidad. En innovaFeed los publicamos
+            y los llevamos a las personas que les interesan: inversores, mentores y curiosos.</p>
+        <form th:action="@{/catalogo}" method="get" class="buscador" role="search">
+            <input type="search" name="q" placeholder="Busca por nombre, ciudad o tema..." aria-label="Buscar emprendimientos">
+            <button type="submit" class="btn">Buscar</button>
+        </form>
+        <p class="hero-acciones" sec:authorize="isAnonymous()">
+            <a class="btn btn-claro" th:href="@{/registro}">Publica tu emprendimiento gratis</a>
+            <a class="enlace-claro" th:href="@{/catalogo}">o explora el catálogo →</a>
+        </p>
+    </div>
+</section>
+
+<main id="contenido" class="contenedor">
+    <div th:if="${param.logout}" class="alerta alerta-ok" role="status">Cerraste sesión correctamente.</div>
+
+    <!-- Recomendados: beneficio del plan Impulso -->
+    <section th:unless="${#lists.isEmpty(recomendados)}" class="seccion-recomendados">
+        <h2>Recomendados</h2>
+        <div class="grid">
+            <th:block th:each="e : ${recomendados}">
+                <article th:replace="~{fragments/tarjeta :: tarjeta(${e})}"></article>
+            </th:block>
+        </div>
+    </section>
+
+    <div class="encabezado">
+        <h2>Descubre emprendimientos</h2>
+        <a th:href="@{/catalogo}">Ver todo el catálogo →</a>
+    </div>
+    <div class="grid">
+        <th:block th:each="e : ${emprendimientos}">
+            <article th:replace="~{fragments/tarjeta :: tarjeta(${e})}"></article>
+        </th:block>
+    </div>
+    <p th:if="${#lists.isEmpty(emprendimientos)}" class="vacio">Aún no hay emprendimientos activos.</p>
+
+    <!-- Cómo funciona: la propuesta de valor en 3 pasos -->
+    <section class="como-funciona" aria-labelledby="titulo-como">
+        <h2 id="titulo-como">¿Cómo funciona?</h2>
+        <ol class="pasos">
+            <li>
+                <span class="paso-numero">1</span>
+                <h3>El emprendedor publica</h3>
+                <p>Crea su perfil gratis: qué hace, en qué etapa está y dónde.</p>
+            </li>
+            <li>
+                <span class="paso-numero">2</span>
+                <h3>Tú eliges tus intereses</h3>
+                <p>Tecnología, salud, sostenibilidad... lo que te mueva.</p>
+            </li>
+            <li>
+                <span class="paso-numero">3</span>
+                <h3>Te lo llevamos</h3>
+                <p>Recibes una notificación cuando nace un emprendimiento que te interesa.</p>
+            </li>
+        </ol>
+    </section>
+</main>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+</body>
+</html>

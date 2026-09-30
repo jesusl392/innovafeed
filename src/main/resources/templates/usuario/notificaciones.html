@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Notificaciones')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navegacion}"></header>
+<main id="contenido" class="contenedor contenedor-medio">
+    <div class="encabezado">
+        <h1>Notificaciones</h1>
+        <form th:if="${noLeidas > 0}" th:action="@{/usuario/notificaciones/leer-todas}" method="post">
+            <button type="submit" class="btn btn-secundario">Marcar todas como leídas</button>
+        </form>
+    </div>
+    <div th:replace="~{fragments/layout :: alertas}"></div>
+
+    <p th:if="${#lists.isEmpty(notificaciones)}" class="vacio">
+        No tienes notificaciones. Elige tus <a th:href="@{/usuario/intereses}">intereses</a> para recibirlas.
+    </p>
+
+    <ul class="lista-notificaciones">
+        <li th:each="n : ${notificaciones}" th:classappend="${!n.leida} ? 'no-leida'">
+            <!-- Al abrirla se marca como leída y lleva al emprendimiento -->
+            <form th:action="@{/usuario/notificaciones/{id}/abrir(id=${n.id})}" method="post" class="notif-form">
+                <button type="submit" class="notif-boton">
+                    <span class="punto" th:if="${!n.leida}" aria-label="Sin leer"></span>
+                    <span class="notif-texto">
+                        <span th:text="${n.mensaje}">Mensaje</span>
+                        <small class="meta">
+                            <span th:text="${n.tipo.name() == 'NUEVO_EMPRENDIMIENTO'} ? 'Nuevo' : 'Actualización'">Tipo</span> ·
+                            <span th:text="${#temporals.format(n.fecha, 'dd/MM/yyyy HH:mm')}">fecha</span>
+                        </small>
+                    </span>
+                </button>
+            </form>
+        </li>
+    </ul>
+</main>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+</body>
+</html>

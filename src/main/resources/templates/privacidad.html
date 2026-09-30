@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Tratamiento de datos')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navegacion}"></header>
+<main id="contenido" class="contenedor contenedor-medio texto-legal">
+    <h1>Política de tratamiento de datos personales</h1>
+    <p class="nota">Conforme a la Ley 1581 de 2012 y el Decreto 1377 de 2013 (Colombia).</p>
+
+    <h2>¿Qué datos recogemos?</h2>
+    <ul>
+        <li><strong>Cuenta:</strong> nombre, correo electrónico, ciudad y contraseña (guardada cifrada: nadie puede leerla).</li>
+        <li><strong>Preferencias:</strong> categorías de interés y emprendimientos guardados en favoritos.</li>
+        <li><strong>Uso:</strong> visitas a perfiles de emprendimientos (fecha y ciudad), para estadísticas agregadas.</li>
+    </ul>
+    <p>No recogemos datos sensibles (salud, origen étnico, orientación política, datos biométricos, etc.).</p>
+
+    <h2>¿Para qué los usamos?</h2>
+    <ul>
+        <li>Operar la plataforma: iniciar sesión, publicar y administrar emprendimientos.</li>
+        <li>Enviarte notificaciones sobre emprendimientos de las categorías que elegiste.</li>
+        <li>Mostrar a los emprendedores estadísticas <em>agregadas</em> (por ejemplo, "10 visitas desde Cali").
+            Nunca les mostramos quién visitó su perfil.</li>
+    </ul>
+
+    <h2>Tus derechos</h2>
+    <p>Como titular puedes <strong>conocer, actualizar y rectificar</strong> tus datos (desde tu página de Perfil),
+        solicitar prueba de la autorización, ser informado del uso de tus datos, revocar la autorización y pedir
+        la supresión de tus datos.</p>
+
+    <h2>Seguridad</h2>
+    <p>Las contraseñas se cifran con BCrypt, el acceso a cada sección está restringido por rol y cada usuario
+        solo puede ver su propia información.</p>
+
+    <p class="nota">innovaFeed es un proyecto académico (PMV). Esta política es una versión simplificada con fines educativos.</p>
+</main>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+</body>
+</html>

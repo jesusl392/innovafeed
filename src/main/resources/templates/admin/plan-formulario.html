@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Editar plan')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navegacion}"></header>
+<main id="contenido" class="contenedor contenedor-medio">
+    <p><a th:href="@{/admin/planes}">← Volver</a></p>
+    <div class="tarjeta">
+        <h1 th:text="'Editar plan ' + ${codigo}">Editar plan</h1>
+        <form th:action="@{/admin/planes/{id}(id=${id})}" th:object="${plan}" method="post" class="formulario" novalidate>
+            <label for="nombre">Nombre *</label>
+            <input type="text" id="nombre" th:field="*{nombre}" th:errorclass="campo-error">
+            <small class="error" th:errors="*{nombre}"></small>
+
+            <label for="descripcion">Descripción</label>
+            <textarea id="descripcion" rows="2" th:field="*{descripcion}" th:errorclass="campo-error"></textarea>
+            <small class="error" th:errors="*{descripcion}"></small>
+
+            <div class="fila">
+                <div>
+                    <label for="precioMensual">Precio mensual (USD) *</label>
+                    <input type="text" inputmode="decimal" id="precioMensual" th:field="*{precioMensual}" th:errorclass="campo-error">
+                    <small class="error" th:errors="*{precioMensual}"></small>
+                </div>
+                <div>
+                    <label for="prioridad">Prioridad en catálogo *</label>
+                    <input type="text" inputmode="numeric" id="prioridad" th:field="*{prioridad}" th:errorclass="campo-error">
+                    <small class="nota">Mayor número = aparece antes.</small>
+                    <small class="error" th:errors="*{prioridad}"></small>
+                </div>
+            </div>
+            <div class="fila">
+                <div>
+                    <label for="boostsPorMes">Boosts por mes *</label>
+                    <input type="text" inputmode="numeric" id="boostsPorMes" th:field="*{boostsPorMes}" th:errorclass="campo-error">
+                    <small class="error" th:errors="*{boostsPorMes}"></small>
+                </div>
+                <div>
+                    <label for="badge">Badge (opcional)</label>
+                    <input type="text" id="badge" th:field="*{badge}" th:errorclass="campo-error" placeholder="Ej: Destacado">
+                    <small class="error" th:errors="*{badge}"></small>
+                </div>
+            </div>
+
+            <fieldset class="opciones">
+                <legend>Beneficios</legend>
+                <label class="opcion"><input type="checkbox" th:field="*{verVisitasSemana}"> Ver visitas de la semana</label>
+                <label class="opcion"><input type="checkbox" th:field="*{notificarAlActualizar}"> Notificar a interesados al actualizar perfil</label>
+                <label class="opcion"><input type="checkbox" th:field="*{apareceEnRecomendados}"> Aparece en «Recomendados»</label>
+                <label class="opcion"><input type="checkbox" th:field="*{estadisticasAvanzadas}"> Estadísticas por ciudad e intereses</label>
+                <label class="opcion"><input type="checkbox" th:field="*{permiteVideoPitch}"> Video pitch o link externo</label>
+            </fieldset>
+
+            <button type="submit" class="btn btn-bloque">Guardar</button>
+        </form>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+</body>
+</html>

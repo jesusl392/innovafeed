@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Gestión de emprendimientos')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navegacion}"></header>
+<main id="contenido" class="contenedor">
+    <h1>Gestión de emprendimientos</h1>
+    <div th:replace="~{fragments/layout :: alertas}"></div>
+
+    <!-- Filtro por estado -->
+    <nav class="pestanas">
+        <a th:href="@{/admin/emprendimientos}" th:classappend="${estadoSeleccionado == null} ? 'activa'">Todos</a>
+        <a th:each="est : ${estados}" th:href="@{/admin/emprendimientos(estado=${est})}"
+           th:text="${est.etiqueta}" th:classappend="${est == estadoSeleccionado} ? 'activa'">Estado</a>
+    </nav>
+
+    <p th:if="${#lists.isEmpty(emprendimientos)}" class="vacio">No hay emprendimientos en este estado.</p>
+
+    <div class="tabla-contenedor" th:unless="${#lists.isEmpty(emprendimientos)}">
+        <table class="tabla">
+            <thead>
+            <tr><th>Nombre</th><th>Emprendedor</th><th>Categoría</th><th>Plan</th><th>Estado</th><th>Acciones</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="e : ${emprendimientos}">
+                <td><a th:href="@{/emprendimientos/{id}(id=${e.id})}" th:text="${e.nombre}">Nombre</a></td>
+                <td th:text="${e.propietario.nombre}">Dueño</td>
+                <td th:text="${e.categoria.nombre}">Cat</td>
+                <td th:text="${e.plan.nombre}">Plan</td>
+                <td>
+                    <!-- Cambiar estado: un select que se envía por POST -->
+                    <form th:action="@{/admin/emprendimientos/{id}/estado(id=${e.id})}" method="post" class="form-estado">
+                        <select name="estado" aria-label="Estado">
+                            <option th:each="est : ${estados}" th:value="${est}" th:text="${est.etiqueta}"
+                                    th:selected="${est == e.estado}">Estado</option>
+                        </select>
+                        <button type="submit" class="btn btn-sm">Aplicar</button>
+                    </form>
+                </td>
+                <td class="acciones">
+                    <a class="btn btn-sm btn-secundario" th:href="@{/admin/emprendimientos/{id}/editar(id=${e.id})}">Editar</a>
+                    <form th:action="@{/admin/emprendimientos/{id}/eliminar(id=${e.id})}" method="post"
+                          onsubmit="return confirm('¿Eliminar este emprendimiento y todos sus datos?');">
+                        <button type="submit" class="btn btn-sm btn-peligro">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+</body>
+</html>

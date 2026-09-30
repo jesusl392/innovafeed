@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Plan y boost')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navegacion}"></header>
+<main id="contenido" class="contenedor" th:with="e=${r.emprendimiento}">
+    <p><a th:href="@{/emprendedor}">← Mis emprendimientos</a></p>
+    <h1 th:text="'Visibilidad de ' + ${e.nombre}">Visibilidad</h1>
+    <div th:replace="~{fragments/layout :: alertas}"></div>
+
+    <!-- Estado actual -->
+    <div class="grid">
+        <div class="tarjeta">
+            <h3>Plan actual</h3>
+            <p class="numero" th:text="${e.plan.nombre}">Gratis</p>
+            <p class="meta" th:if="${r.suscripcion}"
+               th:text="'Vigente hasta el ' + ${#temporals.format(r.suscripcion.fechaFin, 'dd/MM/yyyy')}">vence</p>
+            <p class="meta" th:unless="${r.suscripcion}">Sin suscripción paga.</p>
+        </div>
+        <div class="tarjeta">
+            <h3>Boost</h3>
+            <th:block th:if="${r.boostActivo}">
+                <p class="numero">Activo</p>
+                <p class="meta" th:text="'Hasta el ' + ${#temporals.format(r.boostActivo.fechaFin, 'dd/MM/yyyy HH:mm')}">hasta</p>
+            </th:block>
+            <th:block th:unless="${r.boostActivo}">
+                <p th:text="${r.boostsDisponibles} + ' disponible(s) este mes'">0 disponibles</p>
+                <form th:action="@{/emprendedor/emprendimientos/{id}/boost(id=${e.id})}" method="post">
+                    <button type="submit" class="btn" th:disabled="${r.boostsDisponibles == 0}"
+                            th:text="'Activar boost de ' + ${horasBoost} + ' h'">Activar boost</button>
+                </form>
+                <p class="meta">Un boost pone tu emprendimiento de primero en el catálogo.</p>
+            </th:block>
+        </div>
+    </div>
+
+    <!-- Planes disponibles -->
+    <h2>Cambiar de plan</h2>
+    <p class="nota">Pago simulado: al pulsar «Suscribirme» se registra la suscripción por 30 días sin cobrar dinero real.</p>
+    <div class="grid grid-planes">
+        <article class="tarjeta plan" th:each="p : ${planes}"
+                 th:classappend="${p.codigo == e.plan.codigo} ? 'plan-actual'">
+            <h3 th:text="${p.nombre}">Plan</h3>
+            <p class="precio">$<span th:text="${p.precioMensual.stripTrailingZeros().toPlainString()}">0</span>
+                <small>USD / mes</small></p>
+            <ul th:replace="~{fragments/plan :: beneficios(${p})}"></ul>
+
+            <p th:if="${p.codigo == e.plan.codigo}" class="chip">Tu plan actual</p>
+            <form th:unless="${p.codigo == e.plan.codigo}"
+                  th:action="@{/emprendedor/emprendimientos/{id}/plan(id=${e.id})}" method="post"
+                  th:attr="onsubmit=${p.codigo.name() == 'GRATIS'} ? 'return confirm(\'¿Volver al plan Gratis? Perderás los beneficios de inmediato.\');' : null">
+                <input type="hidden" name="plan" th:value="${p.codigo}">
+                <button type="submit" class="btn btn-bloque"
+                        th:classappend="${p.codigo.name() == 'GRATIS'} ? 'btn-secundario'"
+                        th:text="${p.codigo.name() == 'GRATIS'} ? 'Volver a Gratis' : 'Suscribirme'">Suscribirme</button>
+            </form>
+        </article>
+    </div>
+
+    <!-- Historial de pagos simulados -->
+    <h2>Historial de suscripciones</h2>
+    <p th:if="${#lists.isEmpty(historial)}" class="nota">Aún no hay suscripciones.</p>
+    <div class="tabla-contenedor" th:unless="${#lists.isEmpty(historial)}">
+        <table class="tabla">
+            <thead><tr><th>Plan</th><th>Desde</th><th>Hasta</th><th>Monto (simulado)</th></tr></thead>
+            <tbody>
+            <tr th:each="s : ${historial}">
+                <td th:text="${s.plan.nombre}">Plan</td>
+                <td th:text="${#temporals.format(s.fechaInicio, 'dd/MM/yyyy HH:mm')}">desde</td>
+                <td th:text="${#temporals.format(s.fechaFin, 'dd/MM/yyyy HH:mm')}">hasta</td>
+                <td th:text="'$' + ${s.montoSimulado} + ' USD'">$0</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+</body>
+</html>

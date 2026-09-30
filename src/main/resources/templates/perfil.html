@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Mi perfil')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navegacion}"></header>
+<main id="contenido" class="contenedor contenedor-angosto">
+    <h1>Mi perfil</h1>
+    <div th:replace="~{fragments/layout :: alertas}"></div>
+
+    <div class="tarjeta">
+        <form th:action="@{/perfil}" th:object="${perfil}" method="post" class="formulario" novalidate>
+            <label for="nombre">Nombre</label>
+            <input type="text" id="nombre" th:field="*{nombre}" th:errorclass="campo-error">
+            <small class="error" th:errors="*{nombre}"></small>
+
+            <label for="ciudad">Ciudad</label>
+            <input type="text" id="ciudad" th:field="*{ciudad}" th:errorclass="campo-error">
+            <small class="error" th:errors="*{ciudad}"></small>
+
+            <button type="submit" class="btn btn-bloque">Guardar cambios</button>
+        </form>
+    </div>
+
+    <!-- Ley 1581 de 2012: el titular tiene derecho a conocer qué datos suyos se guardan -->
+    <div class="tarjeta datos-personales">
+        <h2>Tus datos en innovaFeed</h2>
+        <dl>
+            <dt>Correo</dt><dd th:text="${usuario.email}">correo</dd>
+            <dt>Tipo de cuenta</dt><dd th:text="${usuario.rol.etiqueta}">rol</dd>
+            <dt>Miembro desde</dt><dd th:text="${#temporals.format(usuario.fechaRegistro, 'dd/MM/yyyy')}">fecha</dd>
+            <dt>Autorización de datos</dt>
+            <dd th:text="${usuario.fechaAceptacionDatos != null}
+                    ? 'Aceptada el ' + ${#temporals.format(usuario.fechaAceptacionDatos, 'dd/MM/yyyy')}
+                    : 'No registrada'">fecha</dd>
+        </dl>
+        <p class="nota">
+            Usamos tu nombre, correo, ciudad e intereses solo para operar la plataforma y recomendarte
+            emprendimientos (Ley 1581 de 2012). Tu contraseña se guarda cifrada y nadie puede verla.
+        </p>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head(${e.nombre})}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navegacion}"></header>
+<main id="contenido" class="contenedor">
+    <p><a th:href="@{/catalogo}">← Volver al catálogo</a></p>
+    <div th:replace="~{fragments/layout :: alertas}"></div>
+
+    <!-- Aviso para el dueño/admin cuando el perfil todavía no es público -->
+    <div th:if="${e.estado.name() != 'ACTIVO'}" class="alerta alerta-aviso">
+        Este emprendimiento está en estado <strong th:text="${e.estado.etiqueta}">Pendiente</strong>
+        y todavía no es visible en el catálogo público.
+    </div>
+
+    <div class="detalle-layout">
+        <!-- Columna principal -->
+        <article class="tarjeta detalle">
+            <div class="tarjeta-top">
+                <span class="avatar avatar-grande" aria-hidden="true"
+                      th:text="${#strings.toUpperCase(#strings.substring(e.nombre, 0, 1))}">E</span>
+                <div class="tarjeta-cabecera">
+                    <span class="chip" th:text="${e.categoria.nombre}">Categoría</span>
+                    <span th:if="${e.plan.badge}" class="badge" th:text="${e.plan.badge}">Badge</span>
+                    <span th:if="${#sets.contains(idsConBoost, e.id)}" class="badge badge-boost">↑ Impulsado</span>
+                </div>
+            </div>
+            <h1 th:text="${e.nombre}">Nombre</h1>
+            <h2 class="subtitulo">Sobre el emprendimiento</h2>
+            <p class="descripcion" th:text="${e.descripcion}">Descripción</p>
+            <div class="tags">
+                <span class="tag" th:each="t : ${e.listaTags}" th:text="'#' + ${t}">#tag</span>
+            </div>
+        </article>
+
+        <!-- Columna lateral: datos y acciones -->
+        <aside class="tarjeta detalle-lateral">
+            <dl class="datos">
+                <dt>Fundador(a)</dt><dd th:text="${e.fundador}">Fundador</dd>
+                <dt>Ciudad</dt><dd th:text="${e.ciudad}">Ciudad</dd>
+                <dt>Etapa</dt><dd th:text="${e.etapa.etiqueta}">Etapa</dd>
+                <dt>Categoría</dt><dd th:text="${e.categoria.nombre}">Categoría</dd>
+            </dl>
+
+            <a th:if="${e.url}" class="btn btn-bloque" th:href="${e.url}" target="_blank"
+               rel="noopener noreferrer">Visitar sitio web ↗</a>
+            <!-- Video pitch: solo si el plan actual lo permite -->
+            <a th:if="${e.videoPitchUrl != null and e.plan.permiteVideoPitch}" class="btn btn-secundario btn-bloque"
+               th:href="${e.videoPitchUrl}" target="_blank" rel="noopener noreferrer">▶ Ver video pitch</a>
+
+            <!-- Favoritos -->
+            <div class="favorito-caja">
+                <form sec:authorize="hasRole('USUARIO')"
+                      th:action="@{/usuario/favoritos/{id}/alternar(id=${e.id})}" method="post">
+                    <button type="submit" class="btn btn-bloque" th:classappend="${esFavorito} ? 'btn-secundario'"
+                            th:attr="aria-pressed=${esFavorito}"
+                            th:text="${esFavorito} ? '★ Guardado (quitar)' : '☆ Guardar en favoritos'">Guardar</button>
+                </form>
+                <p sec:authorize="isAnonymous()" class="nota">
+                    <a th:href="@{/login}">Ingresa</a> para guardarlo en tus favoritos.
+                </p>
+                <p class="meta" th:text="'Guardado por ' + ${vecesGuardado} + ' persona(s)'">Guardado por 0</p>
+            </div>
+
+            <p th:if="${puedeGestionar}" class="nota">Eres el dueño o administrador de este emprendimiento.</p>
+        </aside>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+</body>
+</html>

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- Lista de beneficios de un plan, construida a partir de las columnas de la tabla "planes".
+     Si el admin cambia un beneficio, esta lista cambia sola. Recibe la variable "p". -->
+<ul th:fragment="beneficios(p)" class="beneficios">
+    <li>Perfil en el catálogo público</li>
+    <li>Estadísticas básicas (visitas totales)</li>
+    <li th:if="${p.prioridad > 1}">Apareces antes que los planes de menor nivel</li>
+    <li th:if="${p.badge}">Badge «<span th:text="${p.badge}">badge</span>»</li>
+    <li th:if="${p.notificarAlActualizar}">Notificamos a los interesados cuando actualizas tu perfil</li>
+    <li th:if="${p.verVisitasSemana}">Visitas de la semana</li>
+    <li th:if="${p.boostsPorMes > 0}">
+        <span th:text="${p.boostsPorMes}">1</span> boost(s) de 48 h al mes
+    </li>
+    <li th:if="${p.apareceEnRecomendados}">Sección «Recomendados»</li>
+    <li th:if="${p.estadisticasAvanzadas}">Estadísticas por ciudad e intereses</li>
+    <li th:if="${p.permiteVideoPitch}">Video pitch o link externo</li>
+</ul>
+</body>
+</html>

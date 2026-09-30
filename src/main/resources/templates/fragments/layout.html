@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<!--
+  Fragmentos reutilizables por todas las páginas:
+  - head(titulo): metadatos, hoja de estilos e ícono
+  - nav: barra superior con menú según el rol (en celular se pliega en un botón "Menú")
+  - alertas: mensajes "flash" después de una redirección
+  - pie: pie de página con slogan y enlaces legales
+-->
+
+<head th:fragment="head(titulo)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="innovaFeed: la plataforma colombiana que hace visibles a los emprendimientos que nacen.">
+    <meta name="theme-color" content="#0D1F17">
+    <title th:text="${titulo} + ' | innovaFeed'">innovaFeed</title>
+    <link rel="icon" type="image/svg+xml" th:href="@{/img/favicon.svg}">
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+
+<body>
+<header th:fragment="navegacion" class="nav">
+    <!-- Accesibilidad: permite saltar el menú con el teclado -->
+    <a class="saltar" href="#contenido">Saltar al contenido</a>
+
+    <div class="nav-interior">
+        <a class="nav-logo" th:href="@{/}" aria-label="innovaFeed, ir al inicio">innova<span>Feed</span></a>
+
+        <!-- Menú plegable en celular SIN JavaScript: la casilla oculta abre/cierra el menú -->
+        <input type="checkbox" id="menu-toggle" class="menu-toggle" aria-label="Mostrar u ocultar el menú">
+        <label for="menu-toggle" class="menu-boton">☰ Menú</label>
+
+        <nav class="nav-links" aria-label="Menú principal"
+             th:with="r=${rutaActual != null ? rutaActual : ''}">
+            <a th:href="@{/catalogo}" th:classappend="${#strings.startsWith(r, '/catalogo')} ? 'activo'">Catálogo</a>
+            <a sec:authorize="!hasAnyRole('ADMIN', 'USUARIO')" th:href="@{/planes}"
+               th:classappend="${r == '/planes'} ? 'activo'">Planes</a>
+
+            <!-- ADMIN -->
+            <th:block sec:authorize="hasRole('ADMIN')">
+                <a th:href="@{/admin}" th:classappend="${r == '/admin'} ? 'activo'">Panel</a>
+                <a th:href="@{/admin/emprendimientos}" th:classappend="${#strings.startsWith(r, '/admin/emprendimientos')} ? 'activo'">Emprendimientos</a>
+                <a th:href="@{/admin/usuarios}" th:classappend="${#strings.startsWith(r, '/admin/usuarios')} ? 'activo'">Usuarios</a>
+                <a th:href="@{/admin/categorias}" th:classappend="${#strings.startsWith(r, '/admin/categorias')} ? 'activo'">Categorías</a>
+                <a th:href="@{/admin/planes}" th:classappend="${#strings.startsWith(r, '/admin/planes')} ? 'activo'">Planes</a>
+            </th:block>
+
+            <!-- EMPRENDEDOR -->
+            <th:block sec:authorize="hasRole('EMPRENDEDOR')">
+                <a th:href="@{/emprendedor}"
+                   th:classappend="${#strings.startsWith(r, '/emprendedor') and r != '/emprendedor/emprendimientos/nuevo'} ? 'activo'">Mis emprendimientos</a>
+                <a th:href="@{/emprendedor/emprendimientos/nuevo}"
+                   th:classappend="${r == '/emprendedor/emprendimientos/nuevo'} ? 'activo'">Publicar</a>
+            </th:block>
+
+            <!-- USUARIO -->
+            <th:block sec:authorize="hasRole('USUARIO')">
+                <a th:href="@{/usuario}" th:classappend="${r == '/usuario'} ? 'activo'">Mi espacio</a>
+                <a th:href="@{/usuario/intereses}" th:classappend="${r == '/usuario/intereses'} ? 'activo'">Intereses</a>
+                <a th:href="@{/usuario/favoritos}" th:classappend="${r == '/usuario/favoritos'} ? 'activo'">Favoritos</a>
+                <a th:href="@{/usuario/notificaciones}" th:classappend="${r == '/usuario/notificaciones'} ? 'activo'">
+                    Notificaciones
+                    <span th:if="${noLeidas > 0}" class="contador" th:text="${noLeidas}"
+                          th:attr="aria-label=${noLeidas} + ' sin leer'">3</span>
+                </a>
+            </th:block>
+
+            <a sec:authorize="isAuthenticated()" th:href="@{/perfil}"
+               th:classappend="${r == '/perfil'} ? 'activo'">Perfil</a>
+
+            <!-- Visitante sin sesión -->
+            <th:block sec:authorize="isAnonymous()">
+                <a th:href="@{/login}" th:classappend="${r == '/login'} ? 'activo'">Ingresar</a>
+                <a class="btn btn-sm" th:href="@{/registro}">Crear cuenta</a>
+            </th:block>
+
+            <!-- Logout por POST (protegido con CSRF) -->
+            <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" class="nav-salir">
+                <span class="nav-user" sec:authentication="name">correo</span>
+                <button type="submit" class="btn btn-sm btn-outline">Salir</button>
+            </form>
+        </nav>
+    </div>
+</header>
+
+<!-- Mensajes "flash" que llegan después de una redirección -->
+<div th:fragment="alertas" th:remove="tag">
+    <div th:if="${mensaje}" class="alerta alerta-ok" role="status" th:text="${mensaje}">OK</div>
+    <div th:if="${error}" class="alerta alerta-error" role="alert" th:text="${error}">Error</div>
+</div>
+
+<footer th:fragment="pie" class="pie">
+    <div class="pie-interior">
+        <div>
+            <p class="pie-logo">innova<span>Feed</span></p>
+            <p class="pie-slogan">Hacemos crecer lo que nace.</p>
+        </div>
+        <nav class="pie-links" aria-label="Enlaces del pie de página">
+            <a th:href="@{/catalogo}">Catálogo</a>
+            <a th:href="@{/planes}">Planes</a>
+            <a th:href="@{/privacidad}">Tratamiento de datos</a>
+        </nav>
+    </div>
+    <p class="pie-legal">
+        Proyecto académico · Ingeniería de Sistemas · Colombia.
+        Datos personales tratados conforme a la Ley 1581 de 2012.
+    </p>
+</footer>
+</body>
+</html>

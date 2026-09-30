@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Planes')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navegacion}"></header>
+<main id="contenido" class="contenedor">
+    <section class="hero">
+        <h1>Planes de visibilidad</h1>
+        <p>Publicar es gratis. Si quieres que más personas te encuentren, elige un plan.
+            Para quienes exploran, innovaFeed es siempre gratis.</p>
+    </section>
+
+    <div class="grid grid-planes">
+        <article class="tarjeta plan" th:each="p : ${planes}"
+                 th:classappend="${p.codigo.name() == 'IMPULSO'} ? 'plan-destacado'">
+            <span th:if="${p.codigo.name() == 'IMPULSO'}" class="badge">Más completo</span>
+            <h2 th:text="${p.nombre}">Plan</h2>
+            <p class="precio">
+                $<span th:text="${p.precioMensual.stripTrailingZeros().toPlainString()}">0</span>
+                <small>USD / mes</small>
+            </p>
+            <p class="nota" th:text="${p.descripcion}">Descripción</p>
+            <ul th:replace="~{fragments/plan :: beneficios(${p})}"></ul>
+        </article>
+    </div>
+
+    <p class="centro">
+        <a sec:authorize="hasRole('EMPRENDEDOR')" class="btn" th:href="@{/emprendedor}">Ir a mis emprendimientos</a>
+        <a sec:authorize="isAnonymous()" class="btn" th:href="@{/registro}">Registra tu emprendimiento gratis</a>
+    </p>
+    <p class="nota centro">Los pagos de este PMV son simulados: no se cobra dinero real.</p>
+</main>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+</body>
+</html>

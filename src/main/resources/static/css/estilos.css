@@ -1,0 +1,454 @@
+/* =====================================================================
+   innovaFeed — hoja de estilos única (sin frameworks)
+   "Hacemos crecer lo que nace."
+
+   Índice
+    1. Variables (paleta y medidas)
+    2. Base
+    3. Accesibilidad
+    4. Contenedores y grillas
+    5. Barra de navegación (con menú plegable en celular)
+    6. Pie de página
+    7. Botones
+    8. Formularios
+    9. Alertas y mensajes
+   10. Tarjetas, avatar, chips, badges y tags
+   11. Inicio (hero y "cómo funciona")
+   12. Catálogo y detalle
+   13. Tablas, estados y pestañas
+   14. Planes
+   15. Zona del usuario (intereses, favoritos, notificaciones, perfil)
+   16. Métricas y gráficos (solo CSS)
+   17. Páginas de error y texto legal
+   ===================================================================== */
+
+/* 1. Variables ------------------------------------------------------- */
+:root {
+    /* Paleta oficial */
+    --verde: #1DB87A;          /* principal: botones, acentos, barras */
+    --verde-oscuro: #0E8A56;   /* bordes y detalles */
+    --verde-claro: #E8F9F1;    /* fondos suaves */
+    --fondo-oscuro: #0D1F17;   /* barra superior, hero, pie */
+
+    /* Derivados para cumplir contraste AA (WCAG) con texto pequeño */
+    --verde-texto: #0B6E45;    /* texto verde sobre blanco o verde claro (≥ 5.8:1) */
+    --verde-hover: #17A56C;
+
+    --texto: #1B2A23;
+    --gris: #5C6B64;
+    --borde: #DCE7E2;
+    --fondo-suave: #F6F9F8;
+    --error: #B42318;
+    --error-fondo: #FDECEA;
+    --aviso: #7A5500;
+    --aviso-fondo: #FFF4D6;
+
+    --radio: 12px;
+    --radio-sm: 8px;
+    --sombra: 0 1px 2px rgba(13, 31, 23, .06), 0 4px 16px rgba(13, 31, 23, .06);
+    --ancho: 1120px;
+}
+
+/* 2. Base ------------------------------------------------------------ */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--texto);
+    background: #fff;
+}
+
+main { flex: 1; }   /* empuja el pie de página hacia abajo */
+
+h1, h2, h3 { line-height: 1.2; color: var(--fondo-oscuro); }
+h1 { font-size: clamp(1.6rem, 4vw, 2.2rem); margin: .4em 0 .5em; }
+h2 { font-size: clamp(1.25rem, 3vw, 1.5rem); margin: 1.4em 0 .6em; }
+h3 { font-size: 1.1rem; }
+
+a { color: var(--verde-texto); text-underline-offset: 2px; }
+a:hover { color: var(--fondo-oscuro); }
+
+img, svg { max-width: 100%; }
+
+/* 3. Accesibilidad --------------------------------------------------- */
+/* Enlace "Saltar al contenido": invisible hasta que recibe el foco con Tab */
+.saltar {
+    position: absolute; left: 8px; top: -60px; z-index: 100;
+    background: var(--verde); color: var(--fondo-oscuro); padding: 8px 14px;
+    border-radius: var(--radio-sm); font-weight: 700; text-decoration: none;
+}
+.saltar:focus { top: 8px; }
+
+/* Foco visible y claro para quien navega con teclado */
+:focus-visible { outline: 3px solid var(--verde); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+}
+
+/* 4. Contenedores y grillas ------------------------------------------ */
+.contenedor { width: 100%; max-width: var(--ancho); margin: 0 auto; padding: 24px 16px 48px; }
+.contenedor-medio { max-width: 780px; }
+.contenedor-angosto { max-width: 480px; }
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(270px, 100%), 1fr));
+    gap: 16px;
+    margin: 16px 0;
+}
+.grid-2 { grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr)); }
+
+.encabezado { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; }
+.encabezado h1, .encabezado h2 { margin-bottom: .3em; }
+
+.centro { text-align: center; }
+.nota { color: var(--gris); font-size: .92rem; }
+.meta { color: var(--gris); font-size: .9rem; margin: 4px 0; }
+.numero { font-size: 1.8rem; font-weight: 700; color: var(--verde-texto); }
+.vacio { background: var(--verde-claro); padding: 24px; border-radius: var(--radio); text-align: center; }
+
+/* 5. Barra de navegación --------------------------------------------- */
+.nav { background: var(--fondo-oscuro); position: sticky; top: 0; z-index: 50; }
+.nav-interior {
+    max-width: var(--ancho); margin: 0 auto; padding: 10px 16px;
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px;
+}
+.nav-logo, .pie-logo, .auth-logo {
+    color: #fff; font-weight: 800; font-size: 1.35rem; text-decoration: none; letter-spacing: -.02em;
+}
+.nav-logo span, .pie-logo span, .auth-logo span { color: var(--verde); }
+.nav-logo:hover { color: #fff; }
+
+.nav-links { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; }
+.nav-links > a {
+    color: #E6EFEB; text-decoration: none; padding: 6px 10px; border-radius: var(--radio-sm);
+    font-size: .95rem;
+}
+.nav-links > a:hover { background: rgba(255, 255, 255, .08); color: #fff; }
+.nav-links > a.activo { color: #fff; box-shadow: inset 0 -3px 0 var(--verde); border-radius: 0; }
+.nav-links > a.btn { color: var(--fondo-oscuro); padding: 6px 14px; border-radius: var(--radio-sm); }
+.nav-salir { display: inline-flex; align-items: center; gap: 8px; margin: 0 0 0 6px; }
+.nav-user { color: var(--verde-claro); font-size: .82rem; opacity: .85; max-width: 190px;
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.contador {
+    display: inline-block; min-width: 20px; padding: 0 6px; margin-left: 2px; border-radius: 999px;
+    background: var(--verde); color: var(--fondo-oscuro); font-size: .75rem; font-weight: 800; text-align: center;
+}
+
+/* Menú plegable (solo CSS): la casilla está oculta y la etiqueta hace de botón */
+.menu-toggle { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
+.menu-boton {
+    display: none; cursor: pointer; color: #fff; border: 1px solid rgba(255, 255, 255, .3);
+    padding: 6px 12px; border-radius: var(--radio-sm); font-weight: 600; user-select: none;
+}
+.menu-toggle:focus-visible + .menu-boton { outline: 3px solid var(--verde); outline-offset: 2px; }
+
+@media (max-width: 1024px) {
+    .menu-boton { display: inline-block; }
+    .nav-links { display: none; width: 100%; flex-direction: column; align-items: stretch; padding: 8px 0 4px; }
+    .menu-toggle:checked ~ .nav-links { display: flex; }
+    .nav-links > a { padding: 10px 12px; }
+    .nav-links > a.activo { box-shadow: inset 3px 0 0 var(--verde); }
+    .nav-links > a.btn { text-align: center; margin-top: 4px; }
+    .nav-salir { margin: 8px 0 0; justify-content: space-between; padding: 8px 12px 0;
+                 border-top: 1px solid rgba(255, 255, 255, .12); }
+    .nav-user { max-width: 60vw; }
+}
+
+/* 6. Pie de página --------------------------------------------------- */
+.pie { background: var(--fondo-oscuro); color: #C9D6D0; margin-top: 32px; }
+.pie-interior {
+    max-width: var(--ancho); margin: 0 auto; padding: 28px 16px 12px;
+    display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px;
+}
+.pie-logo { margin: 0; }
+.pie-slogan { margin: 4px 0 0; color: var(--verde); font-weight: 600; }
+.pie-links { display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center; }
+.pie-links a { color: #E6EFEB; }
+.pie-links a:hover { color: var(--verde); }
+.pie-legal { max-width: var(--ancho); margin: 0 auto; padding: 12px 16px 24px; font-size: .82rem; color: #9FB2AA;
+             border-top: 1px solid rgba(255, 255, 255, .08); }
+
+/* 7. Botones --------------------------------------------------------- */
+/* Botón principal: verde de la marca con texto oscuro (contraste 6.6:1) */
+.btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    background: var(--verde); color: var(--fondo-oscuro); border: 2px solid var(--verde);
+    padding: 10px 18px; border-radius: var(--radio-sm); font: inherit; font-weight: 700;
+    text-decoration: none; cursor: pointer; line-height: 1.2; transition: background .15s, border-color .15s;
+}
+.btn:hover { background: var(--verde-hover); border-color: var(--verde-hover); color: var(--fondo-oscuro); }
+.btn-sm { padding: 5px 12px; font-size: .85rem; }
+.btn-bloque { width: 100%; margin-top: 12px; }
+.btn-secundario { background: #fff; color: var(--verde-texto); border-color: var(--verde-oscuro); }
+.btn-secundario:hover { background: var(--verde-claro); color: var(--verde-texto); border-color: var(--verde-oscuro); }
+.btn-outline { background: transparent; color: #fff; border-color: var(--verde); }
+.btn-outline:hover { background: var(--verde); color: var(--fondo-oscuro); }
+.btn-claro { background: #fff; border-color: #fff; color: var(--fondo-oscuro); }
+.btn-claro:hover { background: var(--verde-claro); border-color: var(--verde-claro); }
+.btn-peligro { background: #fff; color: var(--error); border-color: var(--error); }
+.btn-peligro:hover { background: var(--error); border-color: var(--error); color: #fff; }
+.btn:disabled, .btn:disabled:hover { background: #D5DFDA; border-color: #D5DFDA; color: #66756E; cursor: not-allowed; }
+
+/* 8. Formularios ----------------------------------------------------- */
+.formulario { display: flex; flex-direction: column; gap: 6px; }
+.formulario label { font-weight: 600; margin-top: 10px; }
+.formulario input:not([type=checkbox]):not([type=radio]),
+.formulario select, .formulario textarea,
+.buscador input, .filtros input, .filtros select {
+    width: 100%; padding: 10px 12px; font: inherit; color: var(--texto);
+    border: 1px solid #BFCEC7; border-radius: var(--radio-sm); background: #fff;
+}
+.formulario textarea { resize: vertical; }
+.formulario input:focus, .formulario select:focus, .formulario textarea:focus,
+.buscador input:focus, .filtros input:focus, .filtros select:focus {
+    outline: 3px solid rgba(29, 184, 122, .35); border-color: var(--verde-oscuro);
+}
+.campo-error, .formulario .campo-error { border-color: var(--error) !important; background: #FFF8F7 !important; }
+.error { color: var(--error); font-size: .88rem; }
+.error:empty { display: none; }
+
+.fila { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.fila > div { display: flex; flex-direction: column; gap: 6px; }
+
+.opciones, .tipo-cuenta { border: 1px solid var(--borde); border-radius: var(--radio-sm); padding: 10px 14px; margin: 4px 0; }
+.opciones legend, .tipo-cuenta legend { font-weight: 700; padding: 0 4px; }
+.formulario .opcion { display: flex; gap: 10px; align-items: flex-start; font-weight: 400; }
+.opcion input { margin-top: 4px; accent-color: var(--verde-oscuro); }
+.consentimiento { font-size: .92rem; }
+
+/* Tipo de cuenta en el registro: dos tarjetas seleccionables */
+.tipo-cuenta { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.tipo-cuenta legend { grid-column: 1 / -1; }
+.formulario .opcion-tarjeta {
+    display: flex; gap: 8px; align-items: flex-start; margin: 0; padding: 10px; cursor: pointer; font-weight: 400;
+    border: 1px solid var(--borde); border-radius: var(--radio-sm);
+}
+.opcion-tarjeta:has(input:checked) { border-color: var(--verde-oscuro); background: var(--verde-claro); }
+.opcion-tarjeta input { margin-top: 4px; accent-color: var(--verde-oscuro); }
+.opcion-tarjeta span { display: flex; flex-direction: column; }
+.opcion-tarjeta small { color: var(--gris); }
+
+.buscador, .filtros { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.filtros { margin: 8px 0; }
+.filtros input { flex: 1 1 240px; width: auto; }
+.filtros select { flex: 0 1 220px; width: auto; }
+
+/* 9. Alertas --------------------------------------------------------- */
+.alerta { padding: 12px 16px; border-radius: var(--radio-sm); margin: 0 0 16px; border-left: 4px solid; }
+.alerta p { margin: 0; }
+.alerta-ok { background: var(--verde-claro); color: var(--verde-texto); border-color: var(--verde); }
+.alerta-error { background: var(--error-fondo); color: var(--error); border-color: var(--error); }
+.alerta-aviso { background: var(--aviso-fondo); color: var(--aviso); border-color: #E0A800; }
+.bloque-link { display: block; text-decoration: none; }
+.bloque-link:hover { filter: brightness(.98); }
+
+/* 10. Tarjetas, avatar, chips, badges y tags ------------------------- */
+.tarjeta {
+    background: #fff; border: 1px solid var(--borde); border-radius: var(--radio);
+    padding: 20px; box-shadow: var(--sombra);
+}
+.tarjeta h3 { margin: 0 0 6px; }
+
+/* Tarjeta de emprendimiento: todo el recuadro es clicable (el enlace se estira) */
+.tarjeta-emp { position: relative; display: flex; flex-direction: column; transition: border-color .15s, transform .15s; }
+.tarjeta-emp:hover { border-color: var(--verde); transform: translateY(-2px); }
+.tarjeta-emp h3 { margin: 12px 0 2px; }
+.enlace-tarjeta { color: var(--fondo-oscuro); text-decoration: none; }
+.enlace-tarjeta::after { content: ""; position: absolute; inset: 0; border-radius: var(--radio); }
+.tarjeta-emp .resumen { margin: 8px 0; flex: 1; }
+.con-boost { border-color: var(--verde); box-shadow: 0 0 0 1px var(--verde), var(--sombra); }
+
+.tarjeta-top { display: flex; gap: 12px; align-items: center; }
+.tarjeta-cabecera { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.avatar {
+    flex-shrink: 0; width: 44px; height: 44px; border-radius: 10px;
+    display: grid; place-items: center; font-weight: 800; font-size: 1.2rem;
+    background: var(--fondo-oscuro); color: var(--verde);
+}
+.avatar-grande { width: 64px; height: 64px; font-size: 1.8rem; border-radius: 14px; }
+
+.tarjeta-link { text-decoration: none; color: var(--texto); transition: border-color .15s; }
+.tarjeta-link:hover { border-color: var(--verde); color: var(--texto); }
+.tarjeta-link h3 { color: var(--verde-texto); }
+
+.chip { display: inline-block; background: var(--verde-claro); color: var(--verde-texto);
+        padding: 2px 10px; border-radius: 999px; font-size: .8rem; font-weight: 700; }
+.badge { display: inline-block; background: var(--verde); color: var(--fondo-oscuro);
+         padding: 2px 10px; border-radius: 999px; font-size: .8rem; font-weight: 700; }
+.badge-boost { background: var(--fondo-oscuro); color: var(--verde); }
+.tags { display: flex; flex-wrap: wrap; gap: 4px 10px; margin: 6px 0 0; }
+.tag { color: var(--gris); font-size: .85rem; }
+
+/* 11. Inicio --------------------------------------------------------- */
+.hero-principal {
+    background: radial-gradient(circle at 85% 20%, rgba(29, 184, 122, .25), transparent 45%), var(--fondo-oscuro);
+    color: #E6EFEB;
+}
+.hero-interior { max-width: var(--ancho); margin: 0 auto; padding: 56px 16px 64px; }
+.hero-eyebrow { color: var(--verde); font-weight: 700; text-transform: uppercase; letter-spacing: .08em; font-size: .82rem; margin: 0; }
+.hero-principal h1 { color: #fff; font-size: clamp(2rem, 6vw, 3.4rem); margin: 8px 0 12px; max-width: 16ch; }
+.hero-principal h1 span { color: var(--verde); }
+.hero-texto { max-width: 60ch; font-size: 1.08rem; }
+.hero-principal .buscador { margin-top: 20px; max-width: 560px; }
+.hero-principal .buscador input { flex: 1 1 220px; width: auto; border-color: transparent; }
+.hero-acciones { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; margin-top: 20px; }
+.enlace-claro { color: #E6EFEB; }
+.enlace-claro:hover { color: var(--verde); }
+
+.seccion-recomendados { background: var(--verde-claro); border-radius: var(--radio); padding: 4px 20px 12px; margin: 8px 0 24px; }
+.seccion-recomendados h2 { color: var(--verde-texto); }
+
+.como-funciona { margin-top: 40px; }
+.pasos { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); gap: 16px; }
+.pasos li { background: var(--fondo-suave); border-radius: var(--radio); padding: 20px; }
+.pasos h3 { margin: 10px 0 4px; }
+.pasos p { margin: 0; color: var(--gris); }
+.paso-numero { display: inline-grid; place-items: center; width: 36px; height: 36px; border-radius: 50%;
+               background: var(--verde); color: var(--fondo-oscuro); font-weight: 800; }
+
+/* Hero sencillo de páginas internas (p. ej. Planes) */
+.hero { background: var(--verde-claro); border-radius: var(--radio); padding: 28px 24px; text-align: center; }
+.hero h1 { color: var(--verde-texto); margin-top: 0; }
+
+/* 12. Catálogo y detalle --------------------------------------------- */
+.detalle-layout { display: grid; grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr); gap: 20px; align-items: start; }
+.detalle h1 { margin: 16px 0 4px; }
+.subtitulo { font-size: 1rem; color: var(--gris); text-transform: uppercase; letter-spacing: .05em; margin: 20px 0 6px; }
+.descripcion { white-space: pre-line; font-size: 1.05rem; }
+.detalle-lateral { position: sticky; top: 80px; }
+.datos { display: grid; grid-template-columns: auto 1fr; gap: 8px 16px; margin: 0 0 8px; }
+.datos dt { font-weight: 600; color: var(--gris); }
+.datos dd { margin: 0; }
+.favorito-caja { margin-top: 12px; }
+.favorito-caja form { margin: 0; }
+
+/* 13. Tablas, estados y pestañas ------------------------------------- */
+.tabla-contenedor { overflow-x: auto; border: 1px solid var(--borde); border-radius: var(--radio); margin: 12px 0; }
+.tabla { width: 100%; border-collapse: collapse; }
+.tabla th, .tabla td { padding: 12px; border-bottom: 1px solid var(--borde); text-align: left; vertical-align: middle; }
+.tabla tbody tr:last-child td { border-bottom: 0; }
+.tabla tbody tr:hover { background: var(--fondo-suave); }
+.tabla th { background: var(--verde-claro); color: var(--verde-texto); font-size: .82rem; text-transform: uppercase; letter-spacing: .03em; }
+.acciones { display: flex; flex-wrap: wrap; gap: 6px; }
+.acciones form, .form-estado { margin: 0; display: inline-flex; gap: 6px; align-items: center; }
+.form-estado select { padding: 5px 8px; border-radius: 6px; border: 1px solid #BFCEC7; font: inherit; font-size: .9rem; }
+
+.estado { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: .8rem; font-weight: 700; white-space: nowrap; }
+.estado-PENDIENTE { background: var(--aviso-fondo); color: var(--aviso); }
+.estado-EN_REVISION { background: #E3EFFF; color: #1A4F8F; }
+.estado-ACTIVO { background: var(--verde-claro); color: var(--verde-texto); }
+.estado-SUSPENDIDO { background: var(--error-fondo); color: var(--error); }
+
+.pestanas { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0; }
+.pestanas a { padding: 6px 14px; border-radius: 999px; border: 1px solid #BFCEC7; text-decoration: none; color: var(--texto); }
+.pestanas a:hover { border-color: var(--verde-oscuro); }
+.pestanas a.activa { background: var(--fondo-oscuro); border-color: var(--fondo-oscuro); color: #fff; }
+
+/* 14. Planes --------------------------------------------------------- */
+.grid-planes { align-items: stretch; }
+.plan { display: flex; flex-direction: column; gap: 4px; }
+.plan h2, .plan h3 { margin: 4px 0; color: var(--verde-texto); }
+.plan form { margin-top: auto; }
+.plan-destacado { border: 2px solid var(--verde); }
+.plan-actual { border: 2px solid var(--verde-oscuro); background: var(--verde-claro); }
+.plan > .chip { align-self: flex-start; margin-top: auto; }
+.plan > .badge { align-self: flex-start; }
+.precio { font-size: 2.2rem; font-weight: 800; margin: 4px 0; color: var(--fondo-oscuro); }
+.precio small { font-size: .9rem; font-weight: 400; color: var(--gris); }
+.beneficios { padding-left: 0; list-style: none; margin: 8px 0 12px; }
+.beneficios li { padding: 3px 0 3px 24px; position: relative; font-size: .93rem; }
+.beneficios li::before { content: "✓"; position: absolute; left: 2px; color: var(--verde-oscuro); font-weight: 800; }
+.tabla .beneficios { margin: 0; }
+.tabla .beneficios li { font-size: .8rem; padding-top: 1px; padding-bottom: 1px; }
+
+/* 15. Zona del usuario ----------------------------------------------- */
+.grid-intereses { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(230px, 100%), 1fr)); gap: 10px; margin: 16px 0; }
+.interes { display: flex; gap: 10px; align-items: flex-start; padding: 14px; cursor: pointer;
+           border: 1px solid var(--borde); border-radius: var(--radio-sm); transition: border-color .15s; }
+.interes:hover { border-color: var(--verde-oscuro); }
+.interes:has(input:checked) { border-color: var(--verde-oscuro); background: var(--verde-claro); }
+.interes input { margin-top: 4px; accent-color: var(--verde-oscuro); width: 18px; height: 18px; }
+.interes span { display: flex; flex-direction: column; }
+.interes small { color: var(--gris); }
+
+.favorito { display: flex; flex-direction: column; gap: 8px; }
+.favorito .tarjeta { flex: 1; }
+
+.lista-notificaciones { list-style: none; padding: 0; margin: 12px 0; display: flex; flex-direction: column; gap: 8px; }
+.lista-notificaciones li { border: 1px solid var(--borde); border-radius: var(--radio-sm); padding: 12px 14px;
+                           display: flex; flex-direction: column; }
+.lista-notificaciones li.no-leida { border-color: var(--verde); background: var(--verde-claro); font-weight: 600; }
+.notif-form { margin: 0; }
+.notif-boton { all: unset; cursor: pointer; display: flex; gap: 10px; align-items: flex-start; width: 100%; }
+.notif-boton:focus-visible { outline: 3px solid var(--verde); border-radius: 6px; }
+.notif-boton:hover .notif-texto > span:first-child { text-decoration: underline; }
+.notif-texto { display: flex; flex-direction: column; }
+.punto { width: 10px; height: 10px; border-radius: 50%; background: var(--verde-oscuro); margin-top: 7px; flex-shrink: 0; }
+
+.datos-personales { margin-top: 16px; }
+.datos-personales h2 { margin-top: 0; font-size: 1.1rem; }
+.datos-personales dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; }
+.datos-personales dt { font-weight: 600; color: var(--gris); }
+.datos-personales dd { margin: 0; word-break: break-word; }
+
+/* 16. Métricas y gráficos (solo CSS, sin JavaScript) ----------------- */
+.metricas { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(190px, 100%), 1fr)); gap: 12px; margin: 16px 0; }
+.metrica { background: var(--fondo-oscuro); color: #fff; border-radius: var(--radio); padding: 18px;
+           display: flex; flex-direction: column; gap: 2px; }
+.metrica-valor { font-size: 2.3rem; font-weight: 800; color: var(--verde); line-height: 1.1; }
+.metrica-etiqueta { font-weight: 600; }
+.metrica small { color: #B9CCC3; }
+.lista-links { padding-left: 18px; line-height: 2; }
+.seccion-est { margin-bottom: 16px; }
+.seccion-est h2 { margin-top: 0; font-size: 1.1rem; }
+
+.barras { display: flex; flex-direction: column; gap: 8px; }
+.barra-fila { display: grid; grid-template-columns: minmax(80px, 38%) 1fr auto; gap: 8px; align-items: center; }
+.barra-etiqueta { font-size: .9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.barra { background: var(--verde-claro); border-radius: 6px; height: 14px; overflow: hidden; }
+.barra-relleno { display: block; height: 100%; background: var(--verde); border-radius: 6px; }
+.barra-valor { font-weight: 700; min-width: 2ch; text-align: right; }
+
+.columnas { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; align-items: end; height: 190px; }
+.columna { display: flex; flex-direction: column; align-items: center; height: 100%; gap: 4px; }
+.columna-barra { flex: 1; width: 100%; max-width: 44px; display: flex; align-items: flex-end;
+                 background: var(--verde-claro); border-radius: 6px; overflow: hidden; }
+.columna-relleno { display: block; width: 100%; background: var(--verde); border-radius: 6px 6px 0 0; }
+.columna-valor { font-weight: 700; font-size: .9rem; }
+.columna-etiqueta { font-size: .72rem; color: var(--gris); white-space: nowrap; }
+
+.bloqueado { background: var(--fondo-suave); border: 1px dashed #BFCEC7; border-radius: var(--radio-sm);
+             padding: 18px; text-align: center; color: var(--gris); }
+
+/* 17. Páginas de error y texto legal --------------------------------- */
+.pagina-error { text-align: center; padding-top: 48px; }
+.pagina-error h1 { font-size: 5rem; color: var(--verde-oscuro); margin-bottom: 0; }
+.tarjeta-auth { margin-top: 16px; }
+.tarjeta-auth h1 { margin-top: 4px; }
+.auth-logo { color: var(--fondo-oscuro); display: block; text-align: center; margin: 0; }
+.texto-legal h2 { font-size: 1.2rem; }
+.texto-legal li { margin-bottom: 6px; }
+
+/* Ajustes para pantallas pequeñas ------------------------------------ */
+@media (max-width: 760px) {
+    .detalle-layout { grid-template-columns: 1fr; }
+    .detalle-lateral { position: static; }
+}
+@media (max-width: 600px) {
+    .fila, .tipo-cuenta { grid-template-columns: 1fr; }
+    .tarjeta { padding: 16px; }
+    .hero-interior { padding: 36px 16px 44px; }
+    .columna-etiqueta { font-size: .62rem; }
+    .contenedor { padding-top: 16px; }
+}

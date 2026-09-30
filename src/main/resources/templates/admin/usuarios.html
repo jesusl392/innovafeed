@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Usuarios')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navegacion}"></header>
+<main id="contenido" class="contenedor">
+    <h1>Usuarios</h1>
+    <div th:replace="~{fragments/layout :: alertas}"></div>
+
+    <nav class="pestanas">
+        <a th:href="@{/admin/usuarios}" th:classappend="${rolSeleccionado == null} ? 'activa'">Todos</a>
+        <a th:each="r : ${roles}" th:href="@{/admin/usuarios(rol=${r})}" th:text="${r.etiqueta}"
+           th:classappend="${r == rolSeleccionado} ? 'activa'">Rol</a>
+    </nav>
+
+    <div class="tabla-contenedor">
+        <table class="tabla">
+            <thead>
+            <tr><th>Nombre</th><th>Correo</th><th>Rol</th><th>Ciudad</th><th>Registro</th><th>Estado</th><th></th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="u : ${usuarios}">
+                <td th:text="${u.nombre}">Nombre</td>
+                <td th:text="${u.email}">correo</td>
+                <td th:text="${u.rol.etiqueta}">Rol</td>
+                <td th:text="${u.ciudad}">Ciudad</td>
+                <td th:text="${#temporals.format(u.fechaRegistro, 'dd/MM/yyyy')}">fecha</td>
+                <td><span class="estado" th:classappend="${u.activo} ? 'estado-ACTIVO' : 'estado-SUSPENDIDO'"
+                          th:text="${u.activo} ? 'Activa' : 'Desactivada'">Activa</span></td>
+                <td>
+                    <form th:action="@{/admin/usuarios/{id}/estado(id=${u.id})}" method="post"
+                          th:attr="onsubmit=${u.activo} ? 'return confirm(\'¿Desactivar esta cuenta? No podrá iniciar sesión.\');' : null">
+                        <input type="hidden" name="activo" th:value="${!u.activo}">
+                        <button type="submit" class="btn btn-sm" th:classappend="${u.activo} ? 'btn-peligro'"
+                                th:text="${u.activo} ? 'Desactivar' : 'Activar'">X</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Mi espacio')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navegacion}"></header>
+<main id="contenido" class="contenedor">
+    <h1 th:text="'Hola, ' + ${usuario.nombre}">Hola</h1>
+
+    <div class="grid">
+        <a class="tarjeta tarjeta-link" th:href="@{/usuario/notificaciones}">
+            <h3>Notificaciones</h3>
+            <p><strong class="numero" th:text="${noLeidas}">0</strong> sin leer</p>
+        </a>
+        <a class="tarjeta tarjeta-link" th:href="@{/usuario/favoritos}">
+            <h3>Favoritos</h3>
+            <p><strong class="numero" th:text="${totalFavoritos}">0</strong> guardados</p>
+        </a>
+        <a class="tarjeta tarjeta-link" th:href="@{/usuario/intereses}">
+            <h3>Mis intereses</h3>
+            <p th:if="${#sets.isEmpty(usuario.intereses)}">Aún no eliges intereses. ¡Elígelos para recibir recomendaciones!</p>
+            <div class="tags" th:unless="${#sets.isEmpty(usuario.intereses)}">
+                <span class="chip" th:each="c : ${usuario.intereses}" th:text="${c.nombre}">Cat</span>
+            </div>
+        </a>
+    </div>
+
+    <!-- Recomendados según mis intereses (emprendimientos con plan Impulso) -->
+    <section th:unless="${#lists.isEmpty(recomendados)}" class="seccion-recomendados">
+        <h2>Recomendados para ti</h2>
+        <div class="grid">
+            <th:block th:each="e : ${recomendados}">
+                <article th:replace="~{fragments/tarjeta :: tarjeta(${e})}"></article>
+            </th:block>
+        </div>
+    </section>
+
+    <h2>Últimas notificaciones</h2>
+    <p th:if="${#lists.isEmpty(ultimasNotificaciones)}" class="vacio">
+        No tienes notificaciones todavía. Elige tus intereses y te avisaremos de nuevos emprendimientos.
+    </p>
+    <ul class="lista-notificaciones" th:unless="${#lists.isEmpty(ultimasNotificaciones)}">
+        <li th:each="n : ${ultimasNotificaciones}" th:classappend="${!n.leida} ? 'no-leida'">
+            <span th:text="${n.mensaje}">Mensaje</span>
+            <small class="meta" th:text="${#temporals.format(n.fecha, 'dd/MM/yyyy HH:mm')}">fecha</small>
+        </li>
+    </ul>
+    <p><a th:href="@{/catalogo}" class="btn">Explorar el catálogo</a></p>
+</main>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+</body>
+</html>

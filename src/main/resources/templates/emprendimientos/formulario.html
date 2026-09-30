@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<!-- Formulario compartido: lo usan el emprendedor (crear/editar) y el admin (editar) -->
+<head th:replace="~{fragments/layout :: head(${titulo})}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navegacion}"></header>
+<main id="contenido" class="contenedor contenedor-medio">
+    <p><a th:href="@{${volver}}">← Volver</a></p>
+    <div class="tarjeta">
+        <h1 th:text="${titulo}">Formulario</h1>
+
+        <form th:action="@{${accion}}" th:object="${emprendimiento}" method="post" class="formulario" novalidate>
+            <label for="nombre">Nombre del emprendimiento *</label>
+            <input type="text" id="nombre" th:field="*{nombre}" th:errorclass="campo-error">
+            <small class="error" th:errors="*{nombre}"></small>
+
+            <label for="descripcion">Descripción *</label>
+            <textarea id="descripcion" rows="5" th:field="*{descripcion}" th:errorclass="campo-error"
+                      placeholder="¿Qué problema resuelves y para quién?"></textarea>
+            <small class="error" th:errors="*{descripcion}"></small>
+
+            <div class="fila">
+                <div>
+                    <label for="categoriaId">Categoría *</label>
+                    <select id="categoriaId" th:field="*{categoriaId}" th:errorclass="campo-error">
+                        <option value="">Elige una...</option>
+                        <option th:each="c : ${categorias}" th:value="${c.id}" th:text="${c.nombre}">Cat</option>
+                    </select>
+                    <small class="error" th:errors="*{categoriaId}"></small>
+                </div>
+                <div>
+                    <label for="etapa">Etapa *</label>
+                    <select id="etapa" th:field="*{etapa}" th:errorclass="campo-error">
+                        <option value="">Elige una...</option>
+                        <option th:each="et : ${etapas}" th:value="${et}" th:text="${et.etiqueta}">Etapa</option>
+                    </select>
+                    <small class="error" th:errors="*{etapa}"></small>
+                </div>
+            </div>
+
+            <div class="fila">
+                <div>
+                    <label for="ciudad">Ciudad *</label>
+                    <input type="text" id="ciudad" th:field="*{ciudad}" th:errorclass="campo-error">
+                    <small class="error" th:errors="*{ciudad}"></small>
+                </div>
+                <div>
+                    <label for="fundador">Fundador(a) *</label>
+                    <input type="text" id="fundador" th:field="*{fundador}" th:errorclass="campo-error">
+                    <small class="error" th:errors="*{fundador}"></small>
+                </div>
+            </div>
+
+            <label for="tags">Tags (separados por comas)</label>
+            <input type="text" id="tags" th:field="*{tags}" th:errorclass="campo-error" placeholder="reciclaje, empaques, b2b">
+            <small class="error" th:errors="*{tags}"></small>
+
+            <label for="url">Sitio web</label>
+            <input type="url" id="url" th:field="*{url}" th:errorclass="campo-error" placeholder="https://...">
+            <small class="error" th:errors="*{url}"></small>
+
+            <!-- Beneficio del plan Impulso -->
+            <th:block th:if="${permiteVideo}">
+                <label for="videoPitchUrl">Video pitch o link externo</label>
+                <input type="url" id="videoPitchUrl" th:field="*{videoPitchUrl}" th:errorclass="campo-error" placeholder="https://youtube.com/...">
+                <small class="error" th:errors="*{videoPitchUrl}"></small>
+            </th:block>
+            <p th:unless="${permiteVideo}" class="nota">
+                El video pitch está disponible con el plan Impulso.
+            </p>
+
+            <button type="submit" class="btn btn-bloque">Guardar</button>
+        </form>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+</body>
+</html>

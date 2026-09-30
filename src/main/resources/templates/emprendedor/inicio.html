@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Mis emprendimientos')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navegacion}"></header>
+<main id="contenido" class="contenedor">
+    <div class="encabezado">
+        <h1>Mis emprendimientos</h1>
+        <a class="btn" th:href="@{/emprendedor/emprendimientos/nuevo}">+ Publicar nuevo</a>
+    </div>
+    <div th:replace="~{fragments/layout :: alertas}"></div>
+
+    <p th:if="${#lists.isEmpty(resumenes)}" class="vacio">
+        Todavía no has publicado emprendimientos. ¡Empieza hoy!
+    </p>
+
+    <div class="tabla-contenedor" th:unless="${#lists.isEmpty(resumenes)}">
+        <table class="tabla">
+            <thead>
+            <tr><th>Nombre</th><th>Estado</th><th>Plan</th><th>Boost</th><th>Visitas</th><th>Acciones</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="r : ${resumenes}" th:with="e=${r.emprendimiento}">
+                <td>
+                    <a th:href="@{/emprendimientos/{id}(id=${e.id})}" th:text="${e.nombre}">Nombre</a>
+                    <div class="meta" th:text="${e.categoria.nombre}">Cat</div>
+                </td>
+                <td><span class="estado" th:classappend="'estado-' + ${e.estado}"
+                          th:text="${e.estado.etiqueta}">Estado</span></td>
+                <td>
+                    <strong th:text="${e.plan.nombre}">Plan</strong>
+                    <div class="meta" th:if="${r.suscripcion}"
+                         th:text="'Vence el ' + ${#temporals.format(r.suscripcion.fechaFin, 'dd/MM/yyyy')}">vence</div>
+                </td>
+                <td>
+                    <span th:if="${r.boostActivo}" class="badge badge-boost"
+                          th:text="'Activo hasta ' + ${#temporals.format(r.boostActivo.fechaFin, 'dd/MM HH:mm')}">activo</span>
+                    <span th:unless="${r.boostActivo}" class="meta"
+                          th:text="${r.boostsDisponibles} + ' disponible(s) este mes'">0 disponibles</span>
+                </td>
+                <td><strong th:text="${visitas[e.id]}">0</strong></td>
+                <td class="acciones">
+                    <a class="btn btn-sm" th:href="@{/emprendedor/emprendimientos/{id}/estadisticas(id=${e.id})}">Estadísticas</a>
+                    <a class="btn btn-sm" th:href="@{/emprendedor/emprendimientos/{id}/visibilidad(id=${e.id})}">Plan y boost</a>
+                    <a class="btn btn-sm btn-secundario" th:href="@{/emprendedor/emprendimientos/{id}/editar(id=${e.id})}">Editar</a>
+                    <form th:action="@{/emprendedor/emprendimientos/{id}/eliminar(id=${e.id})}" method="post"
+                          onsubmit="return confirm('¿Seguro que quieres eliminar este emprendimiento? No se puede deshacer.');">
+                        <button type="submit" class="btn btn-sm btn-peligro">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+</body>
+</html>

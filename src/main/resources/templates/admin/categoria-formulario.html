@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${titulo})}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navegacion}"></header>
+<main id="contenido" class="contenedor contenedor-angosto">
+    <p><a th:href="@{/admin/categorias}">← Volver</a></p>
+    <div class="tarjeta">
+        <h1 th:text="${titulo}">Categoría</h1>
+        <form th:action="@{${accion}}" th:object="${categoria}" method="post" class="formulario" novalidate>
+            <label for="nombre">Nombre *</label>
+            <input type="text" id="nombre" th:field="*{nombre}" th:errorclass="campo-error">
+            <small class="error" th:errors="*{nombre}"></small>
+
+            <label for="descripcion">Descripción</label>
+            <textarea id="descripcion" rows="3" th:field="*{descripcion}" th:errorclass="campo-error"></textarea>
+            <small class="error" th:errors="*{descripcion}"></small>
+
+            <button type="submit" class="btn btn-bloque">Guardar</button>
+        </form>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+</body>
+</html>

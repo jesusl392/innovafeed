@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Catálogo')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navegacion}"></header>
+<main id="contenido" class="contenedor">
+    <h1>Catálogo de emprendimientos</h1>
+
+    <!-- Filtros: se envían por GET para que la URL se pueda compartir -->
+    <form th:action="@{/catalogo}" method="get" class="filtros">
+        <input type="search" name="q" th:value="${q}" placeholder="Buscar por nombre, descripción, tags o ciudad"
+               aria-label="Buscar">
+        <select name="categoria" aria-label="Categoría">
+            <option value="">Todas las categorías</option>
+            <option th:each="c : ${categorias}" th:value="${c.id}" th:text="${c.nombre}"
+                    th:selected="${c.id == categoriaSeleccionada}">Categoría</option>
+        </select>
+        <button type="submit" class="btn">Filtrar</button>
+        <a th:if="${q != null or categoriaSeleccionada != null}" th:href="@{/catalogo}">Limpiar</a>
+    </form>
+
+    <p class="nota" th:text="${#lists.size(emprendimientos)} + ' resultado(s)'">0 resultados</p>
+
+    <div class="grid">
+        <th:block th:each="e : ${emprendimientos}">
+            <article th:replace="~{fragments/tarjeta :: tarjeta(${e})}"></article>
+        </th:block>
+    </div>
+    <p th:if="${#lists.isEmpty(emprendimientos)}" class="vacio">
+        No encontramos emprendimientos con esos filtros. Prueba con otra búsqueda.
+    </p>
+</main>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+</body>
+</html>

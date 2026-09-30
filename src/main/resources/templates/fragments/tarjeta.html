@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- Tarjeta de un emprendimiento para el catálogo y el inicio. Recibe la variable "e".
+     Si el controlador envía "idsConBoost", se marca el emprendimiento con boost activo. -->
+<article th:fragment="tarjeta(e)" class="tarjeta tarjeta-emp"
+         th:with="conBoost=${idsConBoost != null and #sets.contains(idsConBoost, e.id)}"
+         th:classappend="${conBoost} ? 'con-boost'">
+    <div class="tarjeta-top">
+        <!-- "Logo" simple: la inicial del emprendimiento -->
+        <span class="avatar" aria-hidden="true" th:text="${#strings.toUpperCase(#strings.substring(e.nombre, 0, 1))}">E</span>
+        <div class="tarjeta-cabecera">
+            <span class="chip" th:text="${e.categoria.nombre}">Categoría</span>
+            <span th:if="${e.plan.badge}" class="badge" th:text="${e.plan.badge}">Badge</span>
+            <span th:if="${conBoost}" class="badge badge-boost">↑ Impulsado</span>
+        </div>
+    </div>
+    <h3><a class="enlace-tarjeta" th:href="@{/emprendimientos/{id}(id=${e.id})}" th:text="${e.nombre}">Nombre</a></h3>
+    <p class="meta">
+        <span th:text="${e.ciudad}">Ciudad</span> ·
+        <span th:text="${e.etapa.etiqueta}">Etapa</span>
+    </p>
+    <p class="resumen" th:text="${#strings.abbreviate(e.descripcion, 120)}">Descripción</p>
+    <div class="tags">
+        <span class="tag" th:each="t : ${e.listaTags}" th:text="'#' + ${t}">#tag</span>
+    </div>
+</article>
+</body>
+</html>

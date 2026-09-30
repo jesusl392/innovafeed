@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Ingresar')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navegacion}"></header>
+<main id="contenido" class="contenedor contenedor-angosto">
+    <div class="tarjeta tarjeta-auth">
+        <p class="auth-logo">innova<span>Feed</span></p>
+        <h1>Ingresar</h1>
+
+        <div th:if="${param.error}" class="alerta alerta-error" role="alert">Correo o contraseña incorrectos, o cuenta inactiva.</div>
+        <div th:if="${param.registrado}" class="alerta alerta-ok" role="status">¡Cuenta creada! Ya puedes ingresar.</div>
+
+        <form th:action="@{/login}" method="post" class="formulario">
+            <label for="email">Correo electrónico</label>
+            <input type="email" id="email" name="email" autocomplete="username" required autofocus>
+
+            <label for="password">Contraseña</label>
+            <input type="password" id="password" name="password" autocomplete="current-password" required>
+
+            <button type="submit" class="btn btn-bloque">Ingresar</button>
+        </form>
+        <p class="nota centro">¿No tienes cuenta? <a th:href="@{/registro}">Regístrate gratis</a></p>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+</body>
+</html>

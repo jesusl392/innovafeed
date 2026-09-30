@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Categorías')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navegacion}"></header>
+<main id="contenido" class="contenedor">
+    <div class="encabezado">
+        <h1>Categorías</h1>
+        <a class="btn" th:href="@{/admin/categorias/nueva}">+ Nueva categoría</a>
+    </div>
+    <div th:replace="~{fragments/layout :: alertas}"></div>
+
+    <div class="tabla-contenedor">
+        <table class="tabla">
+            <thead>
+            <tr><th>Nombre</th><th>Descripción</th><th>Estado</th><th>Acciones</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="c : ${categorias}">
+                <td th:text="${c.nombre}">Nombre</td>
+                <td th:text="${c.descripcion}">Descripción</td>
+                <td>
+                    <span class="estado" th:classappend="${c.activa} ? 'estado-ACTIVO' : 'estado-SUSPENDIDO'"
+                          th:text="${c.activa} ? 'Activa' : 'Inactiva'">Activa</span>
+                </td>
+                <td class="acciones">
+                    <a class="btn btn-sm btn-secundario" th:href="@{/admin/categorias/{id}/editar(id=${c.id})}">Editar</a>
+                    <form th:action="@{/admin/categorias/{id}/activa(id=${c.id})}" method="post">
+                        <input type="hidden" name="activa" th:value="${!c.activa}">
+                        <button type="submit" class="btn btn-sm" th:text="${c.activa} ? 'Desactivar' : 'Activar'">X</button>
+                    </form>
+                    <form th:action="@{/admin/categorias/{id}/eliminar(id=${c.id})}" method="post"
+                          onsubmit="return confirm('¿Eliminar esta categoría?');">
+                        <button type="submit" class="btn btn-sm btn-peligro">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+</body>
+</html>

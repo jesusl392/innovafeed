@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Crear cuenta')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navegacion}"></header>
+<main id="contenido" class="contenedor contenedor-angosto">
+    <div class="tarjeta tarjeta-auth">
+        <p class="auth-logo">innova<span>Feed</span></p>
+        <h1>Crear cuenta</h1>
+
+        <form th:action="@{/registro}" th:object="${registro}" method="post" class="formulario" novalidate>
+            <!-- Errores generales (correo repetido, contraseñas distintas...) -->
+            <div th:if="${#fields.hasGlobalErrors()}" class="alerta alerta-error" role="alert">
+                <p th:each="err : ${#fields.globalErrors()}" th:text="${err}">Error</p>
+            </div>
+
+            <!-- Tipo de cuenta como dos tarjetas seleccionables -->
+            <fieldset class="tipo-cuenta">
+                <legend>¿Cómo quieres usar innovaFeed?</legend>
+                <label class="opcion-tarjeta">
+                    <input type="radio" th:field="*{tipoCuenta}" value="USUARIO">
+                    <span><strong>Quiero descubrir</strong><small>Explorar y apoyar emprendimientos</small></span>
+                </label>
+                <label class="opcion-tarjeta">
+                    <input type="radio" th:field="*{tipoCuenta}" value="EMPRENDEDOR">
+                    <span><strong>Tengo un emprendimiento</strong><small>Publicarlo y hacerlo visible</small></span>
+                </label>
+            </fieldset>
+
+            <label for="nombre">Nombre completo</label>
+            <input type="text" id="nombre" th:field="*{nombre}" th:errorclass="campo-error" autocomplete="name">
+            <small class="error" th:errors="*{nombre}"></small>
+
+            <label for="email">Correo electrónico</label>
+            <input type="email" id="email" th:field="*{email}" th:errorclass="campo-error" autocomplete="email">
+            <small class="error" th:errors="*{email}"></small>
+
+            <label for="ciudad">Ciudad</label>
+            <input type="text" id="ciudad" th:field="*{ciudad}" th:errorclass="campo-error" autocomplete="address-level2">
+            <small class="error" th:errors="*{ciudad}"></small>
+
+            <label for="password">Contraseña <small class="nota">(mínimo 8 caracteres)</small></label>
+            <input type="password" id="password" th:field="*{password}" th:errorclass="campo-error" autocomplete="new-password">
+            <small class="error" th:errors="*{password}"></small>
+
+            <label for="confirmarPassword">Confirmar contraseña</label>
+            <input type="password" id="confirmarPassword" th:field="*{confirmarPassword}" th:errorclass="campo-error" autocomplete="new-password">
+            <small class="error" th:errors="*{confirmarPassword}"></small>
+
+            <label class="opcion consentimiento">
+                <input type="checkbox" th:field="*{aceptaTratamientoDatos}">
+                <span>Autorizo el tratamiento de mis datos personales conforme a la Ley 1581 de 2012 y la
+                    <a th:href="@{/privacidad}" target="_blank">política de tratamiento de datos</a>.</span>
+            </label>
+            <small class="error" th:errors="*{aceptaTratamientoDatos}"></small>
+
+            <button type="submit" class="btn btn-bloque">Crear cuenta</button>
+        </form>
+        <p class="nota centro">¿Ya tienes cuenta? <a th:href="@{/login}">Ingresa</a></p>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: pie}"></footer>
+</body>
+</html>
