@@ -1,0 +1,23 @@
+# Configuración de Render ("Blueprint"): Render lee este archivo del repositorio
+# y crea el servicio web automáticamente. Las variables marcadas con sync: false
+# se escriben a mano en el panel de Render (son secretas y no van en el código).
+services:
+  - type: web
+    name: innovafeed
+    runtime: docker
+    plan: free
+    region: virginia          # la misma región (us-east-1) que el proyecto de Supabase
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /planes  # página pública y liviana para verificar que la app responde
+    autoDeploy: true          # cada push a main vuelve a desplegar
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: DB_URL           # jdbc:postgresql://aws-0-us-east-1.pooler.supabase.com:5432/postgres?sslmode=require
+        sync: false
+      - key: DB_USER          # postgres.<id-del-proyecto>
+        sync: false
+      - key: DB_PASSWORD      # contraseña de la base de datos de Supabase
+        sync: false
+      - key: ADMIN_PASSWORD   # contraseña del admin de la demo en producción
+        sync: false

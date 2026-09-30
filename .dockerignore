@@ -1,0 +1,9 @@
+# Archivos que NO se envían a Docker al construir la imagen
+target/
+.git/
+.claude/
+.idea/
+.vscode/
+docs/
+*.md
+*.log

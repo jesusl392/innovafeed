@@ -77,7 +77,7 @@ Se usa el dominio `.test`, reservado para pruebas, para no apuntar a correos rea
 
 | Rol | Correo | Contraseña | Qué tiene |
 |---|---|---|---|
-| **Admin** | `admin@innovafeed.test` | `Admin123*` | Gestión de toda la plataforma |
+| **Admin** | `admin@innovafeed.test` | `Admin123*` (en producción: la de `ADMIN_PASSWORD`) | Gestión de toda la plataforma |
 | **Emprendedora** | `laura@innovafeed.test` | `Emprende123*` | EcoPackCo (Impulso), AprendeXR y FoodRoute (Gratis) |
 | **Emprendedor** | `carlos@innovafeed.test` | `Emprende123*` | MediIA (Visible, con boost activo) y FinFlow (**Pendiente**) |
 | Usuario | `ana@innovafeed.test` | `Usuario123*` | Intereses: Tecnología, Fintech · Bogotá |
@@ -224,20 +224,53 @@ en el código:
 
 | Variable | Ejemplo |
 |---|---|
-| `DB_URL` | `jdbc:postgresql://host:5432/innovafeed` |
-| `DB_USER` | `innovafeed` |
+| `DB_URL` | `jdbc:postgresql://host:5432/postgres?sslmode=require` |
+| `DB_USER` | `postgres.abcdefgh` |
 | `DB_PASSWORD` | *(secreta)* |
-| `PORT` | `8080` (opcional) |
+| `ADMIN_PASSWORD` | *(secreta, obligatoria)*: contraseña de `admin@innovafeed.test` en producción |
+| `PORT` | `8080` (opcional; Render la define sola) |
 
-```bash
-java -jar target/innovafeed-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod
+En producción la consola H2 queda desactivada, Hibernate usa `ddl-auto=update` (crea o ajusta las tablas
+sin borrar datos) y el `DataLoader` carga los datos de demostración **solo la primera vez** (base vacía).
+La contraseña del admin **no** es la de la tabla de credenciales: es la de `ADMIN_PASSWORD`.
+
+### Despliegue: Render + Supabase (plan gratis)
+
+```
+Navegador ──HTTPS──▶ Render (Docker: Java 17 + Spring Boot) ──JDBC/SSL──▶ Supabase (PostgreSQL)
 ```
 
-En producción la consola H2 queda desactivada y Hibernate usa `ddl-auto=update` (crea o ajusta las tablas
-sin borrar datos).
+**1. Base de datos en Supabase**
+1. Crear un proyecto en [supabase.com](https://supabase.com) (región **East US / us-east-1**) y guardar la
+   contraseña de la base de datos.
+2. Botón **Connect** → pestaña **JDBC** → tipo **Session pooler** (puerto **5432**).
+   ⚠️ No usar el *Transaction pooler* (6543): no funciona con Hibernate.
+3. De esa cadena salen las variables:
+   - `DB_URL` = `jdbc:postgresql://aws-0-us-east-1.pooler.supabase.com:5432/postgres?sslmode=require`
+   - `DB_USER` = `postgres.<id-del-proyecto>`
+   - `DB_PASSWORD` = la contraseña de la base de datos
 
-> **Nota:** el `DataLoader` también corre en producción si la base está vacía, para tener datos de demostración.
-> Antes de un uso real se deben cambiar las contraseñas de prueba o desactivarlo.
+   No hay que crear tablas: la app las crea sola al primer arranque.
+
+**2. Aplicación en Render**
+1. En [render.com](https://render.com): **New → Blueprint** → elegir este repositorio.
+   Render lee [`render.yaml`](render.yaml) y crea el servicio web con Docker.
+2. Escribir las 4 variables secretas: `DB_URL`, `DB_USER`, `DB_PASSWORD` y `ADMIN_PASSWORD`.
+3. Esperar el primer despliegue (5-10 min) y abrir la URL `https://innovafeed-xxxx.onrender.com`.
+
+Cada `git push` a `main` vuelve a desplegar automáticamente.
+
+**Limitaciones del plan gratis** (suficientes para una demostración):
+- Render "duerme" el servicio tras 15 min sin visitas; la siguiente visita tarda ~1 min en despertarlo.
+  **Consejo:** abrir la URL unos minutos antes de la sustentación.
+- Supabase pausa el proyecto tras 7 días sin actividad (se reactiva desde su panel).
+
+### Probar la imagen Docker en local (opcional)
+
+```bash
+docker build -t innovafeed .
+docker run -p 8080:8080 -e DB_URL=... -e DB_USER=... -e DB_PASSWORD=... -e ADMIN_PASSWORD=... innovafeed
+```
 
 ---
 
@@ -289,5 +322,3 @@ sin borrar datos).
 ---
 
 *innovaFeed · Proyecto académico · Ingeniería de Sistemas · Colombia*
-#   i n n o v a f e e d  
- 

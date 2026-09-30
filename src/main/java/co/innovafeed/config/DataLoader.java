@@ -5,6 +5,7 @@ import co.innovafeed.repository.*;
 import co.innovafeed.service.NotificacionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -24,7 +25,7 @@ import java.util.Set;
  * Así en desarrollo (H2) siempre hay datos, y en producción no se duplican.
  *
  * Credenciales de prueba (dominio .test, reservado para pruebas):
- *   admin@innovafeed.test      / Admin123*
+ *   admin@innovafeed.test      / Admin123*      (en producción: variable ADMIN_PASSWORD)
  *   laura@innovafeed.test      / Emprende123*   (emprendedora)
  *   carlos@innovafeed.test     / Emprende123*   (emprendedor)
  *   ana@innovafeed.test, diego@..., sofia@..., mateo@...  / Usuario123*
@@ -44,12 +45,16 @@ public class DataLoader implements CommandLineRunner {
     private final BoostRepository boostRepository;
     private final VisitaRepository visitaRepository;
     private final FavoritoRepository favoritoRepository;
+    /** Contraseña del admin: "Admin123*" en desarrollo, variable ADMIN_PASSWORD en producción. */
+    private final String adminPassword;
 
     public DataLoader(UsuarioRepository usuarioRepository, CategoriaRepository categoriaRepository,
                       PlanRepository planRepository, EmprendimientoRepository emprendimientoRepository,
                       SuscripcionRepository suscripcionRepository, PasswordEncoder passwordEncoder,
                       NotificacionService notificacionService, BoostRepository boostRepository,
-                      VisitaRepository visitaRepository, FavoritoRepository favoritoRepository) {
+                      VisitaRepository visitaRepository, FavoritoRepository favoritoRepository,
+                      @Value("${innovafeed.admin.password}") String adminPassword) {
+        this.adminPassword = adminPassword;
         this.notificacionService = notificacionService;
         this.visitaRepository = visitaRepository;
         this.favoritoRepository = favoritoRepository;
@@ -74,7 +79,7 @@ public class DataLoader implements CommandLineRunner {
         Map<CodigoPlan, Plan> planes = crearPlanes();
 
         // --- Usuarios ---
-        crearUsuario("Administrador innovaFeed", "admin@innovafeed.test", "Admin123*", "Bogotá", Rol.ADMIN, Set.of());
+        crearUsuario("Administrador innovaFeed", "admin@innovafeed.test", adminPassword, "Bogotá", Rol.ADMIN, Set.of());
         Usuario laura = crearUsuario("Laura Gómez", "laura@innovafeed.test", "Emprende123*", "Medellín", Rol.EMPRENDEDOR, Set.of());
         Usuario carlos = crearUsuario("Carlos Pérez", "carlos@innovafeed.test", "Emprende123*", "Bogotá", Rol.EMPRENDEDOR, Set.of());
 
