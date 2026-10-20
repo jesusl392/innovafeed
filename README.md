@@ -295,6 +295,9 @@ docker run -p 8080:8080 -e DB_URL=... -e DB_USER=... -e DB_PASSWORD=... -e ADMIN
 - **Derecho a conocer y actualizar:** la página *Perfil* muestra los datos guardados y permite editarlos.
 - **Contraseñas cifradas con BCrypt**: ni siquiera el admin puede verlas.
 - **No se recogen datos sensibles.**
+- **Publicidad (Google AdSense):** la política informa que Google usa cookies de terceros para mostrar
+  anuncios, cómo desactivar la publicidad personalizada y que innovaFeed **no comparte** con anunciantes
+  el nombre, correo, intereses ni favoritos de los usuarios.
 - **Mínimo acceso:** cada usuario solo ve su información. Por ejemplo, una notificación ajena responde 404,
   y los emprendedores solo ven estadísticas **agregadas** (nunca quién visitó su perfil).
 
