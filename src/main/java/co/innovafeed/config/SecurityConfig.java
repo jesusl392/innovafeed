@@ -13,6 +13,8 @@ import org.springframework.security.web.SecurityFilterChain;
  * - /admin/**        solo ADMIN
  * - /emprendedor/**  solo EMPRENDEDOR
  * - /usuario/**      solo USUARIO
+ * - /perfil          cualquier usuario con sesión
+ * - URL inexistente  página 404 (también para visitantes sin sesión)
  */
 @Configuration
 public class SecurityConfig {
@@ -39,12 +41,15 @@ public class SecurityConfig {
                 .requestMatchers("/login", "/registro").permitAll()
                 // Consola H2 (solo existe en desarrollo; en prod está apagada)
                 .requestMatchers("/h2-console/**").permitAll()
-                // Zonas por rol
+                // Zonas privadas: por rol, o con cualquier sesión
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/emprendedor/**").hasRole("EMPRENDEDOR")
                 .requestMatchers("/usuario/**").hasRole("USUARIO")
-                // Todo lo demás requiere sesión
-                .anyRequest().authenticated())
+                .requestMatchers("/perfil").authenticated()
+                // Cualquier otra URL: se deja pasar para que, si no existe, responda la página 404
+                // (con "authenticated()" un visitante veía el login en vez del 404).
+                // IMPORTANTE: toda página privada nueva debe ir bajo una de las rutas de arriba.
+                .anyRequest().permitAll())
             .formLogin(form -> form
                 .loginPage("/login")
                 .usernameParameter("email")

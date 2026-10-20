@@ -40,6 +40,14 @@ class SeguridadTest {
         mvc.perform(get("/admin")).andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlPattern("**/login"));
         mvc.perform(get("/usuario/favoritos")).andExpect(status().is3xxRedirection());
+        mvc.perform(get("/perfil")).andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("**/login"));
+    }
+
+    @Test
+    @DisplayName("Una URL que no existe muestra el 404, aunque el visitante no haya iniciado sesión")
+    void urlInexistenteDa404SinSesion() throws Exception {
+        mvc.perform(get("/esta-pagina-no-existe")).andExpect(status().isNotFound());
     }
 
     @Test
