@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.servlet.http.HttpSession;
+import org.springframework.data.domain.Page;
 
 import java.security.Principal;
 import java.util.HashSet;
@@ -41,12 +42,15 @@ public class CatalogoController {
         this.favoritoService = favoritoService;
     }
 
-    /** /catalogo?categoria=3&q=eco */
+    /** /catalogo?categoria=3&q=eco&page=1  (page empieza en 0) */
     @GetMapping("/catalogo")
     public String catalogo(@RequestParam(required = false) Long categoria,
                            @RequestParam(required = false) String q,
+                           @RequestParam(defaultValue = "0") int page,
                            Model model) {
-        model.addAttribute("emprendimientos", emprendimientoService.buscarCatalogo(categoria, q));
+        Page<Emprendimiento> pagina = emprendimientoService.buscarCatalogo(categoria, q, page);
+        model.addAttribute("pagina", pagina);
+        model.addAttribute("emprendimientos", pagina.getContent());
         model.addAttribute("idsConBoost", emprendimientoService.idsConBoostActivo());
         model.addAttribute("categorias", categoriaService.listarActivas());
         model.addAttribute("categoriaSeleccionada", categoria);

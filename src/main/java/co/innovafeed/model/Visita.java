@@ -12,7 +12,9 @@ import java.time.LocalDateTime;
  * Usuario y ciudad son opcionales: los visitantes sin sesión también cuentan.
  */
 @Entity
-@Table(name = "visitas")
+@Table(name = "visitas",
+        // Índice para las estadísticas: "visitas de este emprendimiento desde tal fecha"
+        indexes = @Index(name = "idx_visita_emprendimiento_fecha", columnList = "emprendimiento_id, fecha"))
 @Getter
 @Setter
 @NoArgsConstructor

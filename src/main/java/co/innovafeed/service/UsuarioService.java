@@ -7,6 +7,7 @@ import co.innovafeed.model.Rol;
 import co.innovafeed.model.Usuario;
 import co.innovafeed.repository.CategoriaRepository;
 import co.innovafeed.repository.UsuarioRepository;
+import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -104,9 +105,13 @@ public class UsuarioService {
                 .orElseThrow(() -> new RecursoNoEncontradoException("Usuario no encontrado"));
     }
 
+    /** Listado paginado del admin, con filtro opcional por rol. */
     @Transactional(readOnly = true)
-    public List<Usuario> listarTodos() {
-        return usuarioRepository.findAllByOrderByFechaRegistroDesc();
+    public Page<Usuario> listar(Rol rol, int pagina) {
+        var pedido = Paginas.pedir(pagina, Paginas.TAMANO_TABLAS);
+        return rol == null
+                ? usuarioRepository.findAllByOrderByFechaRegistroDesc(pedido)
+                : usuarioRepository.findByRolOrderByFechaRegistroDesc(rol, pedido);
     }
 
     /** El admin activa o desactiva una cuenta. No puede desactivarse a sí mismo. */

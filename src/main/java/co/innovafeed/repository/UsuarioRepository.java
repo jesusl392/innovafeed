@@ -3,6 +3,8 @@ package co.innovafeed.repository;
 import co.innovafeed.model.Categoria;
 import co.innovafeed.model.Rol;
 import co.innovafeed.model.Usuario;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -22,7 +24,10 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     long countByActivoTrue();
 
-    List<Usuario> findAllByOrderByFechaRegistroDesc();
+    /** Listados paginados del admin. */
+    Page<Usuario> findAllByOrderByFechaRegistroDesc(Pageable pagina);
+
+    Page<Usuario> findByRolOrderByFechaRegistroDesc(Rol rol, Pageable pagina);
 
     List<Usuario> findByRol(Rol rol);
 

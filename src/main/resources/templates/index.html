@@ -26,6 +26,19 @@
 <main id="contenido" class="contenedor">
     <div th:if="${param.logout}" class="alerta alerta-ok" role="status">Cerraste sesión correctamente.</div>
 
+    <!-- Destacados: emprendimientos con un boost activo (48 horas) -->
+    <section th:unless="${#lists.isEmpty(destacados)}" class="seccion-destacados">
+        <div class="encabezado">
+            <h2>Destacados</h2>
+            <span class="badge badge-boost">↑ Impulsados por 48 horas</span>
+        </div>
+        <div class="grid">
+            <th:block th:each="e : ${destacados}">
+                <article th:replace="~{fragments/tarjeta :: tarjeta(${e})}"></article>
+            </th:block>
+        </div>
+    </section>
+
     <!-- Recomendados: beneficio del plan Impulso -->
     <section th:unless="${#lists.isEmpty(recomendados)}" class="seccion-recomendados">
         <h2>Recomendados</h2>

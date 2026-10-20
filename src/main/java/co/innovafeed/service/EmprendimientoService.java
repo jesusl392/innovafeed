@@ -3,6 +3,7 @@ package co.innovafeed.service;
 import co.innovafeed.dto.EmprendimientoDTO;
 import co.innovafeed.model.*;
 import co.innovafeed.repository.*;
+import org.springframework.data.domain.Page;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,6 +67,28 @@ public class EmprendimientoService {
         return ordenar(resultado);
     }
 
+    /** El mismo catálogo, cortado en páginas de 12 tarjetas (el orden se aplica antes de cortar). */
+    @Transactional(readOnly = true)
+    public Page<Emprendimiento> buscarCatalogo(Long categoriaId, String texto, int pagina) {
+        return Paginas.de(buscarCatalogo(categoriaId, texto), pagina, Paginas.TAMANO_CATALOGO);
+    }
+
+    /**
+     * Sección "Destacados": emprendimientos activos con un boost vigente (48 h).
+     * Se ordenan con la misma regla del catálogo (entre ellos gana el plan y luego el más reciente).
+     */
+    @Transactional(readOnly = true)
+    public List<Emprendimiento> destacados(int maximo) {
+        Set<Long> ids = idsConBoostActivo();
+        if (ids.isEmpty()) {
+            return List.of();
+        }
+        List<Emprendimiento> activos = emprendimientoRepository.findAllById(ids).stream()
+                .filter(e -> e.getEstado() == EstadoEmprendimiento.ACTIVO)
+                .toList();
+        return ordenar(activos).stream().limit(maximo).toList();
+    }
+
     /**
      * Sección "Recomendados": emprendimientos activos cuyo plan incluye ese beneficio (Impulso),
      * de las categorías que le interesan al usuario. Si no tiene intereses (o no hay sesión),
@@ -120,11 +143,13 @@ public class EmprendimientoService {
         return emprendimientoRepository.findByPropietarioOrderByFechaCreacionDesc(propietario);
     }
 
+    /** Listado paginado del admin, con filtro opcional por estado. */
     @Transactional(readOnly = true)
-    public List<Emprendimiento> listarTodos(EstadoEmprendimiento estado) {
+    public Page<Emprendimiento> listarTodos(EstadoEmprendimiento estado, int pagina) {
+        var pedido = Paginas.pedir(pagina, Paginas.TAMANO_TABLAS);
         return estado == null
-                ? emprendimientoRepository.findAllByOrderByFechaCreacionDesc()
-                : emprendimientoRepository.findByEstadoOrderByFechaCreacionDesc(estado);
+                ? emprendimientoRepository.findAllByOrderByFechaCreacionDesc(pedido)
+                : emprendimientoRepository.findByEstadoOrderByFechaCreacionDesc(estado, pedido);
     }
 
     // ---------------------------------------------------------------

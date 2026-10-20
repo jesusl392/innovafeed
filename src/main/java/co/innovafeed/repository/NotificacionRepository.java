@@ -3,6 +3,8 @@ package co.innovafeed.repository;
 import co.innovafeed.model.Emprendimiento;
 import co.innovafeed.model.Notificacion;
 import co.innovafeed.model.Usuario;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -13,7 +15,8 @@ import java.util.Optional;
 
 public interface NotificacionRepository extends JpaRepository<Notificacion, Long> {
 
-    List<Notificacion> findByUsuarioOrderByFechaDesc(Usuario usuario);
+    /** Bandeja paginada, de la más reciente a la más antigua. */
+    Page<Notificacion> findByUsuarioOrderByFechaDesc(Usuario usuario, Pageable pagina);
 
     List<Notificacion> findTop5ByUsuarioOrderByFechaDesc(Usuario usuario);
 

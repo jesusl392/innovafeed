@@ -14,11 +14,11 @@ import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * Prueba de integración (con base de datos H2 real y los datos del DataLoader):
+ * Prueba de integración (con una base H2 en memoria propia y los datos del DataLoader):
  * cuando la suscripción de un emprendimiento vence, vuelve al plan GRATIS.
  * @Transactional deshace los cambios al terminar la prueba.
  */
-@SpringBootTest
+@SpringBootTest(properties = "spring.datasource.url=jdbc:h2:mem:vencimiento;DB_CLOSE_DELAY=-1")
 @Transactional
 class SuscripcionVencimientoTest {
 

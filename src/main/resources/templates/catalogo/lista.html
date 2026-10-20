@@ -19,7 +19,7 @@
         <a th:if="${q != null or categoriaSeleccionada != null}" th:href="@{/catalogo}">Limpiar</a>
     </form>
 
-    <p class="nota" th:text="${#lists.size(emprendimientos)} + ' resultado(s)'">0 resultados</p>
+    <p class="nota" th:text="${pagina.totalElements} + ' resultado(s)'">0 resultados</p>
 
     <div class="grid">
         <th:block th:each="e : ${emprendimientos}">
@@ -29,6 +29,7 @@
     <p th:if="${#lists.isEmpty(emprendimientos)}" class="vacio">
         No encontramos emprendimientos con esos filtros. Prueba con otra búsqueda.
     </p>
+    <nav th:replace="~{fragments/paginacion :: paginacion(${pagina})}"></nav>
 </main>
 <footer th:replace="~{fragments/layout :: pie}"></footer>
 </body>

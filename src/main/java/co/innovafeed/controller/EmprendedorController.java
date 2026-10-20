@@ -94,7 +94,7 @@ public class EmprendedorController {
     public String activarBoost(@PathVariable Long id, Principal principal, RedirectAttributes flash) {
         try {
             Boost b = boostService.activar(id, usuarioService.usuarioActual(principal));
-            flash.addFlashAttribute("mensaje", "¡Boost activado! Tu emprendimiento aparece de primero en el catálogo hasta el "
+            flash.addFlashAttribute("mensaje", "¡Boost activado! Tu emprendimiento aparece en Destacados y de primero en el catálogo hasta el "
                     + b.getFechaFin().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")) + ".");
         } catch (ReglaNegocioException ex) {
             flash.addFlashAttribute("error", ex.getMessage());

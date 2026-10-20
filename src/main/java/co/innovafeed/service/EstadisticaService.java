@@ -92,8 +92,10 @@ public class EstadisticaService {
         }
         Plan plan = e.getPlan();
 
-        // Todos los planes: visitas totales y guardados
+        // Todos los planes (estadísticas mínimas): visitas del mes, totales y guardados
         long totales = visitaRepository.countByEmprendimiento(e);
+        LocalDateTime inicioMes = LocalDate.now().withDayOfMonth(1).atStartOfDay();
+        long delMes = visitaRepository.countByEmprendimientoAndFechaGreaterThanEqual(e, inicioMes);
         long guardados = favoritoRepository.countByEmprendimiento(e);
 
         // Visible e Impulso: visitas de la semana, día por día
@@ -117,7 +119,7 @@ public class EstadisticaService {
             porIntereses = visitaRepository.contarPorInteresesDeVisitantes(e);
         }
 
-        return new EstadisticasEmprendimiento(totales, guardados,
+        return new EstadisticasEmprendimiento(totales, delMes, guardados,
                 plan.isVerVisitasSemana(), semana, porDia,
                 plan.isEstadisticasAvanzadas(), porCiudad, porIntereses);
     }

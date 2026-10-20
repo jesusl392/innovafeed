@@ -98,8 +98,10 @@ public class UsuarioController {
     // ------------------------- Notificaciones -------------------------
 
     @GetMapping("/notificaciones")
-    public String notificaciones(Principal principal, Model model) {
-        model.addAttribute("notificaciones", notificacionService.listar(usuarioService.usuarioActual(principal)));
+    public String notificaciones(@RequestParam(defaultValue = "0") int page, Principal principal, Model model) {
+        var pagina = notificacionService.listar(usuarioService.usuarioActual(principal), page);
+        model.addAttribute("pagina", pagina);
+        model.addAttribute("notificaciones", pagina.getContent());
         return "usuario/notificaciones";
     }
 

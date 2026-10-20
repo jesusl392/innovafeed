@@ -8,7 +8,7 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 /**
- * Impulso temporal (48h) que pone un emprendimiento de primero en el catálogo.
+ * Impulso temporal (48h) que pone un emprendimiento en "Destacados" y de primero en el catálogo.
  */
 @Entity
 @Table(name = "boosts")

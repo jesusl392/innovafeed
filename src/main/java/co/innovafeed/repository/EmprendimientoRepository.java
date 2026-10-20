@@ -5,6 +5,8 @@ import co.innovafeed.model.CodigoPlan;
 import co.innovafeed.model.Emprendimiento;
 import co.innovafeed.model.EstadoEmprendimiento;
 import co.innovafeed.model.Usuario;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -20,7 +22,11 @@ public interface EmprendimientoRepository extends JpaRepository<Emprendimiento, 
 
     List<Emprendimiento> findByPropietarioOrderByFechaCreacionDesc(Usuario propietario);
 
-    List<Emprendimiento> findAllByOrderByFechaCreacionDesc();
+    /** Listado paginado del admin (todos los estados). */
+    Page<Emprendimiento> findAllByOrderByFechaCreacionDesc(Pageable pagina);
+
+    /** Listado paginado del admin filtrado por estado. */
+    Page<Emprendimiento> findByEstadoOrderByFechaCreacionDesc(EstadoEmprendimiento estado, Pageable pagina);
 
     List<Emprendimiento> findByEstadoOrderByFechaCreacionDesc(EstadoEmprendimiento estado);
 
