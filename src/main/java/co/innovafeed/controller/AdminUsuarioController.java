@@ -24,12 +24,13 @@ public class AdminUsuarioController {
         this.usuarioService = usuarioService;
     }
 
-    /** /admin/usuarios?rol=EMPRENDEDOR */
+    /** /admin/usuarios?rol=EMPRENDEDOR&page=0 */
     @GetMapping
-    public String listar(@RequestParam(required = false) Rol rol, Model model) {
-        model.addAttribute("usuarios", usuarioService.listarTodos().stream()
-                .filter(u -> rol == null || u.getRol() == rol)
-                .toList());
+    public String listar(@RequestParam(required = false) Rol rol,
+                         @RequestParam(defaultValue = "0") int page, Model model) {
+        var pagina = usuarioService.listar(rol, page);
+        model.addAttribute("pagina", pagina);
+        model.addAttribute("usuarios", pagina.getContent());
         model.addAttribute("roles", Rol.values());
         model.addAttribute("rolSeleccionado", rol);
         return "admin/usuarios";

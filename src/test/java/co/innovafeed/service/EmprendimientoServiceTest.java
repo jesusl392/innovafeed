@@ -9,11 +9,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
 import org.springframework.security.access.AccessDeniedException;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.IntStream;
 
 import static co.innovafeed.DatosDePrueba.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -54,6 +56,61 @@ class EmprendimientoServiceTest {
 
         assertThat(resultado).extracting(Emprendimiento::getNombre)
                 .containsExactly("VisibleConBoost", "Impulso", "Gratis");
+    }
+
+    @Test
+    @DisplayName("El catálogo se muestra en páginas de 12 tarjetas, sin perder el orden")
+    void catalogoPaginado() {
+        // 13 emprendimientos Gratis: E1 es el más reciente, E13 el más antiguo
+        List<Emprendimiento> trece = IntStream.rangeClosed(1, 13)
+                .mapToObj(i -> emprendimiento((long) i, "E" + i, planGratis(), i))
+                .toList();
+        when(emprendimientoRepository.buscarPorTexto(EstadoEmprendimiento.ACTIVO, "%%")).thenReturn(trece);
+
+        Page<Emprendimiento> primera = servicio.buscarCatalogo(null, null, 0);
+        Page<Emprendimiento> segunda = servicio.buscarCatalogo(null, null, 1);
+
+        assertThat(primera.getContent()).hasSize(12);
+        assertThat(primera.getContent().get(0).getNombre()).isEqualTo("E1");
+        assertThat(primera.getTotalElements()).isEqualTo(13);
+        assertThat(primera.getTotalPages()).isEqualTo(2);
+        assertThat(segunda.getContent()).extracting(Emprendimiento::getNombre).containsExactly("E13");
+    }
+
+    @Test
+    @DisplayName("Una página fuera de rango muestra la última; una negativa, la primera")
+    void paginaFueraDeRango() {
+        List<Emprendimiento> cinco = IntStream.rangeClosed(1, 5)
+                .mapToObj(i -> emprendimiento((long) i, "E" + i, planGratis(), i))
+                .toList();
+        when(emprendimientoRepository.buscarPorTexto(any(), any())).thenReturn(cinco);
+
+        assertThat(servicio.buscarCatalogo(null, null, 99).getNumber()).isZero();
+        assertThat(servicio.buscarCatalogo(null, null, -3).getNumber()).isZero();
+        assertThat(servicio.buscarCatalogo(null, null, -3).getContent()).hasSize(5);
+    }
+
+    @Test
+    @DisplayName("Destacados: solo emprendimientos ACTIVOS con boost vigente, ordenados por plan")
+    void destacadosSoloConBoostYActivos() {
+        var gratisBoost = emprendimiento(1L, "GratisBoost", planGratis(), 0);
+        var impulsoBoost = emprendimiento(2L, "ImpulsoBoost", planImpulso(), 5);
+        var suspendidoBoost = emprendimiento(3L, "SuspendidoBoost", planVisible(), 1);
+        suspendidoBoost.setEstado(EstadoEmprendimiento.SUSPENDIDO);
+        when(boostRepository.idsConBoostActivo(any())).thenReturn(Set.of(1L, 2L, 3L));
+        when(emprendimientoRepository.findAllById(any())).thenReturn(List.of(gratisBoost, impulsoBoost, suspendidoBoost));
+
+        assertThat(servicio.destacados(3)).extracting(Emprendimiento::getNombre)
+                .containsExactly("ImpulsoBoost", "GratisBoost");
+    }
+
+    @Test
+    @DisplayName("Sin boosts activos, la sección Destacados queda vacía")
+    void sinBoostsNoHayDestacados() {
+        when(boostRepository.idsConBoostActivo(any())).thenReturn(Set.of());
+
+        assertThat(servicio.destacados(3)).isEmpty();
+        verify(emprendimientoRepository, never()).findAllById(any());
     }
 
     @Test

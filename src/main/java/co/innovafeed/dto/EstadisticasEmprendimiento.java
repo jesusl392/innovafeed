@@ -6,11 +6,13 @@ import java.util.List;
  * Estadísticas que ve el emprendedor. Las secciones que su plan no incluye
  * llegan vacías (el servicio ni siquiera las calcula): así no se filtran datos.
  *
+ * @param visitasMes    visitas del mes calendario en curso (todos los planes: "estadísticas mínimas del mes")
  * @param verSemana     el plan permite ver las visitas de la semana (Visible, Impulso)
  * @param avanzadas     el plan permite ver ciudad e intereses (Impulso)
  */
 public record EstadisticasEmprendimiento(
         long visitasTotales,
+        long visitasMes,
         long guardados,
         boolean verSemana,
         long visitasSemana,

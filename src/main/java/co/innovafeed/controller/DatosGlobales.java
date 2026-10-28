@@ -7,6 +7,7 @@ import co.innovafeed.service.UsuarioService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.security.Principal;
 
@@ -29,6 +30,20 @@ public class DatosGlobales {
     @ModelAttribute("rutaActual")
     public String rutaActual(HttpServletRequest request) {
         return request.getRequestURI().substring(request.getContextPath().length());
+    }
+
+    /**
+     * URL actual SIN el parámetro "page", terminada en "?" o "&", lista para pegarle "page=N".
+     * La usan los botones Anterior/Siguiente: así conservan los filtros (búsqueda, categoría, estado...).
+     */
+    @ModelAttribute("urlSinPagina")
+    public String urlSinPagina(HttpServletRequest request) {
+        String url = UriComponentsBuilder.fromPath(rutaActual(request))
+                .query(request.getQueryString())
+                .replaceQueryParam("page")
+                .build()
+                .toUriString();
+        return url + (url.contains("?") ? "&" : "?");
     }
 
     /** Cantidad de notificaciones sin leer; 0 si no hay sesión o no es rol USUARIO. */

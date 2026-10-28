@@ -36,10 +36,13 @@ public class AdminEmprendimientoController {
         this.usuarioService = usuarioService;
     }
 
-    /** /admin/emprendimientos?estado=PENDIENTE */
+    /** /admin/emprendimientos?estado=PENDIENTE&page=0 */
     @GetMapping
-    public String listar(@RequestParam(required = false) EstadoEmprendimiento estado, Model model) {
-        model.addAttribute("emprendimientos", emprendimientoService.listarTodos(estado));
+    public String listar(@RequestParam(required = false) EstadoEmprendimiento estado,
+                         @RequestParam(defaultValue = "0") int page, Model model) {
+        var pagina = emprendimientoService.listarTodos(estado, page);
+        model.addAttribute("pagina", pagina);
+        model.addAttribute("emprendimientos", pagina.getContent());
         model.addAttribute("estados", EstadoEmprendimiento.values());
         model.addAttribute("estadoSeleccionado", estado);
         return "admin/emprendimientos";

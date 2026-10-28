@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- Botones Anterior / Siguiente. Recibe un Page de Spring ("pagina") y usa "urlSinPagina"
+     (DatosGlobales) para conservar los filtros actuales. Solo aparece si hay más de una página. -->
+<nav th:fragment="paginacion(pagina)" th:if="${pagina.totalPages > 1}" class="paginacion"
+     aria-label="Paginación">
+    <a th:if="${pagina.hasPrevious()}" class="btn btn-sm btn-secundario"
+       th:href="@{${urlSinPagina + 'page=' + (pagina.number - 1)}}" rel="prev">← Anterior</a>
+    <span class="paginacion-info"
+          th:text="'Página ' + ${pagina.number + 1} + ' de ' + ${pagina.totalPages}">Página 1 de 3</span>
+    <a th:if="${pagina.hasNext()}" class="btn btn-sm btn-secundario"
+       th:href="@{${urlSinPagina + 'page=' + (pagina.number + 1)}}" rel="next">Siguiente →</a>
+</nav>
+</body>
+</html>

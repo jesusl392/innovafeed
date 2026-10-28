@@ -4,6 +4,7 @@ import co.innovafeed.model.*;
 import co.innovafeed.repository.NotificacionRepository;
 import co.innovafeed.repository.UsuarioRepository;
 import co.innovafeed.service.notificacion.NotificationSender;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -81,9 +82,11 @@ public class NotificacionService {
     // Bandeja del usuario
     // ---------------------------------------------------------------
 
+    /** Bandeja paginada (20 por página). */
     @Transactional(readOnly = true)
-    public List<Notificacion> listar(Usuario usuario) {
-        return notificacionRepository.findByUsuarioOrderByFechaDesc(usuario);
+    public Page<Notificacion> listar(Usuario usuario, int pagina) {
+        return notificacionRepository.findByUsuarioOrderByFechaDesc(usuario,
+                Paginas.pedir(pagina, Paginas.TAMANO_TABLAS));
     }
 
     @Transactional(readOnly = true)

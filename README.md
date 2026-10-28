@@ -25,6 +25,7 @@ Ingeniería de Sistemas.
 10. [Protección de datos (Ley 1581 de 2012)](#10-protección-de-datos-ley-1581-de-2012)
 11. [Guion de demostración](#11-guion-de-demostración)
 12. [Decisiones técnicas](#12-decisiones-técnicas)
+13. [Reparto del trabajo en el equipo](#13-reparto-del-trabajo-en-el-equipo)
 
 ---
 
@@ -34,8 +35,8 @@ Ingeniería de Sistemas.
 |---|---|
 | Lenguaje | Java 17 |
 | Framework | Spring Boot 3.5 (Web, Data JPA, Security, Validation) |
-| Vistas | Thymeleaf + CSS propio (sin frameworks de JavaScript) |
-| Base de datos | H2 en memoria (desarrollo) · PostgreSQL (producción) |
+| Vistas | Thymeleaf + CSS propio (sin frameworks de JavaScript) · fuentes Unbounded y DM Sans |
+| Base de datos | H2 en archivo (desarrollo) · PostgreSQL (producción) |
 | Seguridad | Spring Security + BCrypt |
 | Pruebas | JUnit 5 + Mockito + Spring Test (MockMvc) |
 | Construcción | Maven |
@@ -56,10 +57,11 @@ mvn spring-boot:run
 
 Abrir **http://localhost:8080**.
 
-- La base de datos H2 vive **en memoria**: al apagar la aplicación se borra, y al volver a iniciarla
-  se cargan de nuevo los datos de prueba.
+- La base de datos H2 se guarda **en archivo**, en la carpeta `./data`: los datos **sobreviven** a los
+  reinicios. La primera vez (carpeta vacía) se cargan los datos de prueba.
+- **Para volver a los datos de prueba iniciales:** apagar la app y borrar la carpeta `data`.
 - Consola de la base de datos: **http://localhost:8080/h2-console**
-  (JDBC URL `jdbc:h2:mem:innovafeed`, usuario `sa`, contraseña vacía).
+  (JDBC URL `jdbc:h2:file:./data/innovafeed`, usuario `sa`, contraseña vacía).
 
 ### Generar el ejecutable `.jar`
 
@@ -93,7 +95,8 @@ Se usa el dominio `.test`, reservado para pruebas, para no apuntar a correos rea
 ## 4. Funcionalidades por rol
 
 ### Visitante (sin sesión)
-- Inicio con buscador, sección **Recomendados** y emprendimientos destacados.
+- Inicio (el *feed*) con buscador y las secciones **Destacados** (boost activo), **Recomendados** (plan Impulso)
+  y "Descubre emprendimientos".
 - **Catálogo público** con búsqueda por texto (nombre, descripción, tags, ciudad) y filtro por categoría.
 - Perfil de cada emprendimiento, página de **planes** y política de **tratamiento de datos**.
 - Registro como *usuario* o como *emprendedor*.
@@ -109,7 +112,7 @@ Se usa el dominio `.test`, reservado para pruebas, para no apuntar a correos rea
 - **Publicar** emprendimientos (entran como *Pendiente*), editarlos y eliminarlos (solo los suyos).
 - **Plan y boost:** suscribirse a Visible/Impulso (**pago simulado**), volver a Gratis, activar boosts
   y ver el historial de suscripciones.
-- **Estadísticas** según su plan: visitas totales, guardados, semana, ciudad e intereses.
+- **Estadísticas** según su plan: visitas del mes, totales y guardados (todos); semana (Visible); ciudad e intereses (Impulso).
 
 ### Administrador
 - **Dashboard** con métricas: emprendimientos, usuarios activos, notificaciones sin leer, vistas totales
@@ -128,7 +131,7 @@ Se usa el dominio `.test`, reservado para pruebas, para no apuntar a correos rea
 | Beneficio | Gratis ($0) | Visible ($9/mes) | Impulso ($19/mes) |
 |---|:-:|:-:|:-:|
 | Perfil en el catálogo | ✓ | ✓ | ✓ |
-| Estadísticas mínimas (visitas totales, guardados) | ✓ | ✓ | ✓ |
+| Estadísticas mínimas del mes (visitas del mes, totales y guardados) | ✓ | ✓ | ✓ |
 | Aparece antes en el catálogo (prioridad) | 1 | 2 | 3 |
 | Badge | — | "En crecimiento" | "Destacado" |
 | Notificar a interesados al actualizar el perfil | — | ✓ | ✓ |
@@ -142,9 +145,20 @@ Se usa el dominio `.test`, reservado para pruebas, para no apuntar a correos rea
 - Cada suscripción dura **30 días** (`innovafeed.suscripcion.dias`). Una tarea programada revisa cada hora
   y devuelve a *Gratis* los planes vencidos.
 
-### Orden del catálogo
+### Orden del catálogo y boosts
 **boost activo → plan (Impulso > Visible > Gratis) → más recientes**
 (implementado en `OrdenCatalogo.java`).
+
+Un **boost** dura 48 horas: durante ese tiempo el emprendimiento aparece en la sección **Destacados** del
+inicio y de primero en el catálogo.
+
+### Volumen y paginación
+Pensado para arrancar con ~20 emprendimientos y ~100 usuarios, y aguantar ~1.000 y ~10.000 sin reescribir:
+- **Paginación:** catálogo de 12 en 12; bandeja de notificaciones y tablas del admin de 20 en 20.
+  Los botones *Anterior/Siguiente* conservan los filtros.
+- **Índices** en `emprendimientos(estado, categoria_id)`, `visitas(emprendimiento_id, fecha)` y
+  `notificaciones(usuario_id, leida)`.
+- Sin caché, colas ni microservicios: un solo proyecto Maven.
 
 ### Notificaciones automáticas
 1. Cuando un emprendimiento **pasa a Activo**, se notifica a todos los usuarios interesados en su categoría.
@@ -171,7 +185,7 @@ src/main/java/co/innovafeed
 ├── dto/           Objetos de formularios y de estadísticas (RegistroDTO, EmprendimientoDTO, PlanDTO, Conteo...)
 ├── model/         Entidades JPA (tablas) y enums
 ├── repository/    Acceso a datos con Spring Data JPA
-└── service/       Lógica de negocio (Emprendimiento, Notificacion, Suscripcion, Boost, Estadistica, OrdenCatalogo...)
+└── service/       Lógica de negocio (Emprendimiento, Notificacion, Suscripcion, Boost, Estadistica, OrdenCatalogo, Paginas...)
     └── notificacion/   NotificationSender (interfaz) + InAppNotificationSender
 
 src/main/resources
@@ -202,13 +216,13 @@ El diagrama completo está en **[docs/diagrama-er.md](docs/diagrama-er.md)** (Gi
 mvn test
 ```
 
-**46 pruebas** en 8 clases:
+**50 pruebas** en 8 clases:
 
 | Clase | Tipo | Qué prueba |
 |---|---|---|
 | `OrdenCatalogoTest` | Unitaria pura | Boost > Impulso > Visible > Gratis > recientes, desempates y prioridad configurable |
 | `NotificacionServiceTest` | Unitaria (Mockito) | Notificar al activar, al actualizar según el plan, múltiples canales, bandeja |
-| `EmprendimientoServiceTest` | Unitaria (Mockito) | Orden aplicado al catálogo, búsqueda, permisos, estado → notificaciones |
+| `EmprendimientoServiceTest` | Unitaria (Mockito) | Orden aplicado al catálogo, paginación, Destacados, búsqueda, permisos, estado → notificaciones |
 | `BoostServiceTest` | Unitaria (Mockito) | 48 h, límite mensual, un boost a la vez, solo emprendimientos activos |
 | `SuscripcionServiceTest` | Unitaria (Mockito) | Pago simulado de 30 días, cambio de plan, volver a Gratis |
 | `UsuarioServiceTest` | Unitaria (Mockito) | BCrypt, no registrarse como ADMIN, correo duplicado |
@@ -281,6 +295,9 @@ docker run -p 8080:8080 -e DB_URL=... -e DB_USER=... -e DB_PASSWORD=... -e ADMIN
 - **Derecho a conocer y actualizar:** la página *Perfil* muestra los datos guardados y permite editarlos.
 - **Contraseñas cifradas con BCrypt**: ni siquiera el admin puede verlas.
 - **No se recogen datos sensibles.**
+- **Publicidad (Google AdSense):** la política informa que Google usa cookies de terceros para mostrar
+  anuncios, cómo desactivar la publicidad personalizada y que innovaFeed **no comparte** con anunciantes
+  el nombre, correo, intereses ni favoritos de los usuarios.
 - **Mínimo acceso:** cada usuario solo ve su información. Por ejemplo, una notificación ajena responde 404,
   y los emprendedores solo ven estadísticas **agregadas** (nunca quién visitó su perfil).
 
@@ -288,8 +305,8 @@ docker run -p 8080:8080 -e DB_URL=... -e DB_USER=... -e DB_PASSWORD=... -e ADMIN
 
 ## 11. Guion de demostración
 
-1. **Visitante:** abrir el catálogo. MediIA aparece primero (boost) y EcoPackCo segundo (Impulso).
-   Buscar "reciclaje".
+1. **Visitante:** en el inicio, MediIA aparece en **Destacados** (tiene un boost). En el catálogo sale primero
+   y EcoPackCo segundo (Impulso). Buscar "reciclaje".
 2. **Admin** (`admin@innovafeed.test`): ver el dashboard, ir a *Emprendimientos → Pendiente* y
    **activar FinFlow**. El mensaje dice "Se notificó a 2 usuario(s)".
 3. **Usuario** (`mateo@innovafeed.test`): ver el contador de notificaciones, abrir la de FinFlow y
@@ -297,8 +314,8 @@ docker run -p 8080:8080 -e DB_URL=... -e DB_USER=... -e DB_PASSWORD=... -e ADMIN
 4. **Emprendedora** (`laura@innovafeed.test`):
    - Editar EcoPackCo (Impulso): "Avisamos a N personas".
    - Editar FoodRoute (Gratis): no avisa a nadie.
-   - En AprendeXR → *Plan y boost*: suscribirse a Visible y activar un boost. AprendeXR pasa al primer
-     lugar del catálogo.
+   - En AprendeXR → *Plan y boost*: suscribirse a Visible y activar un boost. AprendeXR pasa a
+     **Destacados** y al primer lugar del catálogo.
    - Comparar las *Estadísticas* de EcoPackCo (completas) con las de FoodRoute (bloqueadas).
 5. **Admin → Planes:** cambiar el precio de Visible y ver `/planes` actualizado sin tocar código.
 
@@ -318,6 +335,22 @@ docker run -p 8080:8080 -e DB_URL=... -e DB_USER=... -e DB_PASSWORD=... -e ADMIN
 | Menú móvil y gráficos **solo con CSS** | Sin frameworks de JS, funciona aunque JavaScript esté apagado |
 | Botones #1DB87A con texto oscuro | Contraste 6.6:1 (WCAG AA); el texto blanco sobre ese verde daba 2.6:1 |
 | Tarea programada cada hora para vencer planes | Una sola regla en un solo lugar, en vez de revisarlo en cada consulta |
+| H2 **en archivo** para desarrollo | Los datos de prueba que crea el equipo no se pierden al reiniciar |
+| Catálogo ordenado en Java y luego **paginado** | Con ~1.000 emprendimientos toma milisegundos y la regla de orden sigue siendo fácil de probar |
+| "Quién visita mi perfil" como estadísticas **agregadas** | Responde a la encuesta sin mostrar datos personales de otros usuarios (Ley 1581) |
+
+---
+
+## 13. Reparto del trabajo en el equipo
+
+| Integrante | Rol | Responsabilidades | Archivos principales |
+|---|---|---|---|
+| **CTO** | Backend y seguridad | Entidades, repositorios, servicios y reglas de negocio (notificaciones, planes, boosts, orden), Spring Security y despliegue | `model/`, `repository/`, `service/`, `config/SecurityConfig`, `Dockerfile` |
+| **CMO** | Vistas y estilos | Plantillas Thymeleaf, CSS, responsive, accesibilidad, fuentes y paleta; recorrer la app como usuario | `templates/`, `static/css/estilos.css` |
+| **CEO** | Datos, pruebas y documentación | DataLoader, pruebas JUnit/Mockito, README, diagrama ER, guion de demo, Ley 1581, planes y precios | `config/DataLoader`, `src/test/`, `README.md`, `docs/` |
+
+Para la sustentación, cada integrante explica su parte **y** el flujo completo:
+*publicar → el admin activa → se notifica a los interesados → se registran las métricas*.
 
 ---
 

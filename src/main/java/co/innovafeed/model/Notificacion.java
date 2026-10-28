@@ -11,7 +11,9 @@ import java.time.LocalDateTime;
  * Aviso dentro de la app para un usuario sobre un emprendimiento de su interés.
  */
 @Entity
-@Table(name = "notificaciones")
+@Table(name = "notificaciones",
+        // Índice para la bandeja y el contador de "no leídas" de cada usuario
+        indexes = @Index(name = "idx_notificacion_usuario_leida", columnList = "usuario_id, leida"))
 @Getter
 @Setter
 @NoArgsConstructor

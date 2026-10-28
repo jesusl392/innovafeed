@@ -13,7 +13,9 @@ import java.util.List;
  * Emprendimiento publicado por un emprendedor. Es el centro del modelo.
  */
 @Entity
-@Table(name = "emprendimientos")
+@Table(name = "emprendimientos",
+        // Índice para el catálogo, que siempre filtra por estado (y a veces por categoría)
+        indexes = @Index(name = "idx_emprendimiento_estado_categoria", columnList = "estado, categoria_id"))
 @Getter
 @Setter
 @NoArgsConstructor

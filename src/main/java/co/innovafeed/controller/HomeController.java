@@ -10,13 +10,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import java.security.Principal;
 
 /**
- * Página de inicio pública: slogan, "Recomendados" y los primeros del catálogo.
+ * Página de inicio pública (el "feed"): slogan, "Destacados" (boost activo),
+ * "Recomendados" (plan Impulso) y los primeros del catálogo.
  */
 @Controller
 public class HomeController {
 
     private static final int MAX_EN_INICIO = 6;
     private static final int MAX_RECOMENDADOS = 3;
+    private static final int MAX_DESTACADOS = 3;
 
     private final EmprendimientoService emprendimientoService;
     private final UsuarioService usuarioService;
@@ -29,6 +31,7 @@ public class HomeController {
     @GetMapping("/")
     public String inicio(Principal principal, Model model) {
         Usuario visitante = usuarioService.usuarioActual(principal);
+        model.addAttribute("destacados", emprendimientoService.destacados(MAX_DESTACADOS));
         model.addAttribute("recomendados", emprendimientoService.recomendados(visitante, MAX_RECOMENDADOS));
         model.addAttribute("emprendimientos", emprendimientoService.buscarCatalogo(null, null)
                 .stream().limit(MAX_EN_INICIO).toList());

@@ -43,6 +43,10 @@
     --aviso: #7A5500;
     --aviso-fondo: #FFF4D6;
 
+    /* Tipografía de la marca (con respaldo si Google Fonts no carga) */
+    --fuente-titulos: "Unbounded", "Segoe UI", system-ui, sans-serif;
+    --fuente-texto: "DM Sans", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+
     --radio: 12px;
     --radio-sm: 8px;
     --sombra: 0 1px 2px rgba(13, 31, 23, .06), 0 4px 16px rgba(13, 31, 23, .06);
@@ -59,7 +63,7 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-family: var(--fuente-texto);
     font-size: 16px;
     line-height: 1.55;
     color: var(--texto);
@@ -68,10 +72,12 @@ body {
 
 main { flex: 1; }   /* empuja el pie de página hacia abajo */
 
-h1, h2, h3 { line-height: 1.2; color: var(--fondo-oscuro); }
-h1 { font-size: clamp(1.6rem, 4vw, 2.2rem); margin: .4em 0 .5em; }
-h2 { font-size: clamp(1.25rem, 3vw, 1.5rem); margin: 1.4em 0 .6em; }
-h3 { font-size: 1.1rem; }
+/* Títulos en Unbounded (fuente ancha: tamaños algo menores) */
+h1, h2, h3 { font-family: var(--fuente-titulos); font-weight: 700; line-height: 1.2;
+             letter-spacing: -.01em; color: var(--fondo-oscuro); overflow-wrap: break-word; }
+h1 { font-size: clamp(1.4rem, 3.6vw, 2rem); margin: .4em 0 .5em; }
+h2 { font-size: clamp(1.1rem, 2.6vw, 1.35rem); margin: 1.4em 0 .6em; }
+h3 { font-size: 1rem; }
 
 a { color: var(--verde-texto); text-underline-offset: 2px; }
 a:hover { color: var(--fondo-oscuro); }
@@ -123,7 +129,8 @@ img, svg { max-width: 100%; }
     display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px;
 }
 .nav-logo, .pie-logo, .auth-logo {
-    color: #fff; font-weight: 800; font-size: 1.35rem; text-decoration: none; letter-spacing: -.02em;
+    font-family: var(--fuente-titulos); color: #fff; font-weight: 800; font-size: 1.2rem;
+    text-decoration: none; letter-spacing: -.02em;
 }
 .nav-logo span, .pie-logo span, .auth-logo span { color: var(--verde); }
 .nav-logo:hover { color: #fff; }
@@ -297,7 +304,7 @@ img, svg { max-width: 100%; }
 }
 .hero-interior { max-width: var(--ancho); margin: 0 auto; padding: 56px 16px 64px; }
 .hero-eyebrow { color: var(--verde); font-weight: 700; text-transform: uppercase; letter-spacing: .08em; font-size: .82rem; margin: 0; }
-.hero-principal h1 { color: #fff; font-size: clamp(2rem, 6vw, 3.4rem); margin: 8px 0 12px; max-width: 16ch; }
+.hero-principal h1 { color: #fff; font-size: clamp(1.7rem, 5.2vw, 3rem); font-weight: 800; margin: 8px 0 12px; max-width: 17ch; }
 .hero-principal h1 span { color: var(--verde); }
 .hero-texto { max-width: 60ch; font-size: 1.08rem; }
 .hero-principal .buscador { margin-top: 20px; max-width: 560px; }
@@ -452,3 +459,14 @@ img, svg { max-width: 100%; }
     .columna-etiqueta { font-size: .62rem; }
     .contenedor { padding-top: 16px; }
 }
+
+/* Tipografía de la marca en números grandes y elementos destacados */
+.metrica-valor, .precio, .numero, .avatar, .paso-numero, .pagina-error h1 { font-family: var(--fuente-titulos); }
+
+/* Sección "Destacados" del inicio (boost activo) */
+.seccion-destacados { border: 2px solid var(--verde); border-radius: var(--radio); padding: 4px 20px 12px; margin: 24px 0; }
+.seccion-destacados .encabezado h2 { margin-bottom: .2em; }
+
+/* Paginación */
+.paginacion { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 12px; margin: 20px 0 8px; }
+.paginacion-info { color: var(--gris); font-size: .92rem; }
