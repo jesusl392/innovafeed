@@ -3,19 +3,39 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <!--
   Fragmentos reutilizables por todas las páginas:
-  - head(titulo): metadatos, hoja de estilos e ícono
-  - nav: barra superior con menú según el rol (en celular se pliega en un botón "Menú")
+  - head(titulo): metadatos, hoja de estilos e ícono (SIN anuncios)
+  - head-con-ads(titulo): metadatos y script de Google AdSense (CON anuncios)
+  - nav: barra superior con menú según el rol
   - alertas: mensajes "flash" después de una redirección
   - pie: pie de página con slogan y enlaces legales
 -->
 
+<!-- 1. HEAD NORMAL (Para páginas de perfil, planes, login, registro, etc.) -->
 <head th:fragment="head(titulo)">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="innovaFeed: la plataforma colombiana que hace visibles a los emprendimientos que nacen.">
     <meta name="theme-color" content="#0D1F17">
 
-    <!-- Google AdSense -->
+    <title th:text="${titulo} + ' | innovaFeed'">innovaFeed</title>
+
+    <link rel="icon" type="image/svg+xml" th:href="@{/img/favicon.svg}">
+    <!-- Fuentes de la marca: Unbounded (títulos) y DM Sans (texto) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Unbounded:wght@500;700;800&display=swap">
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+
+<!-- 2. HEAD CON ADSENSE (Úsalo SOLAMENTE en inicio o catálogo) -->
+<head th:fragment="head-con-ads(titulo)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="innovaFeed: la plataforma colombiana que hace visibles a los emprendimientos que nacen.">
+    <meta name="theme-color" content="#0D1F17">
+
+    <!-- Google AdSense (Solo se cargará en las páginas que llamen a este head) -->
     <script async
             src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9503662274144728"
             crossorigin="anonymous"></script>
